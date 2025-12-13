@@ -1,0 +1,9 @@
+*
+!.gitignore
+!resource/
+!source/
+!*.h
+!*.cpp
+!*.uidesc
+
+source/dr_wav.h

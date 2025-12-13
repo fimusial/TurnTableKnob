@@ -1,0 +1,150 @@
+#include "processor.h"
+
+namespace TTK
+{
+    TurnTableKnobProcessor::TurnTableKnobProcessor()
+        : timelineControlFactory(this)
+    {
+        setControllerClass(kTurnTableKnobControllerUID);
+    }
+
+    TurnTableKnobProcessor::~TurnTableKnobProcessor()
+    {
+        if (segment)
+        {
+            delete segment;
+        }
+    }
+
+    tresult PLUGIN_API TurnTableKnobProcessor::initialize(FUnknown* context)
+    {
+        tresult result = AudioEffect::initialize(context);
+        if (result != kResultOk)
+        {
+            return result;
+        }
+
+        addAudioOutput(STR16("Stereo Out"), SpeakerArr::kStereo);
+        addEventInput(STR16("Event In"), 1);
+        return kResultOk;
+    }
+
+    tresult PLUGIN_API TurnTableKnobProcessor::terminate()
+    {
+        return AudioEffect::terminate();
+    }
+
+    tresult PLUGIN_API TurnTableKnobProcessor::setBusArrangements(
+        SpeakerArrangement* inputs, int32 numIns, SpeakerArrangement* outputs, int32 numOuts)
+    {
+        if (numOuts != 1)
+        {
+            return kResultFalse;
+        }
+
+        tresult result = AudioEffect::setBusArrangements(inputs, numIns, outputs, numOuts);
+        if (result != kResultOk)
+        {
+            return result;
+        }
+
+        speakerArrangement = outputs[0];
+        return kResultOk;
+    }
+
+    tresult PLUGIN_API TurnTableKnobProcessor::canProcessSampleSize(int32 symbolicSampleSize)
+    {
+        return symbolicSampleSize == kSample32 || symbolicSampleSize == kSample64
+            ? kResultTrue
+            : kResultFalse;
+    }
+
+    tresult PLUGIN_API TurnTableKnobProcessor::setupProcessing(ProcessSetup& newSetup)
+    {
+        return AudioEffect::setupProcessing(newSetup);
+    }
+
+    tresult PLUGIN_API TurnTableKnobProcessor::setActive(TBool state)
+    {
+        return AudioEffect::setActive(state);
+    }
+
+    tresult PLUGIN_API TurnTableKnobProcessor::setState(IBStream* state)
+    {
+        IBStreamer streamer(state, kLittleEndian);
+        return kResultOk;
+    }
+
+    tresult PLUGIN_API TurnTableKnobProcessor::getState(IBStream* state)
+    {
+        IBStreamer streamer(state, kLittleEndian);
+        return kResultOk;
+    }
+
+    tresult PLUGIN_API TurnTableKnobProcessor::process(ProcessData& data)
+    {
+        if (data.numOutputs == 0 || data.numSamples == 0)
+        {
+            return kResultOk;
+        }
+
+        bool is32 = processSetup.symbolicSampleSize == kSample32;
+        bool is64 = processSetup.symbolicSampleSize == kSample64;
+        int channelCount = SpeakerArr::getChannelCount(speakerArrangement);
+
+        if (!segment)
+        {
+            for (int channel = 0; channel < channelCount; channel++)
+            {
+                for (int sample = 0; sample < data.numSamples && is32; sample++)
+                {
+                    data.outputs[0].channelBuffers32[channel][sample] = 0.0f;
+                }
+
+                for (int sample = 0; sample < data.numSamples && is64; sample++)
+                {
+                    data.outputs[0].channelBuffers64[channel][sample] = 0.0;
+                }
+            }
+
+            data.outputs[0].silenceFlags = ((uint64)1 << channelCount) - 1;
+            return kResultOk;
+        }
+
+        int minChannelCount = channelCount < segment->channelCount
+            ? channelCount
+            : segment->channelCount;
+
+        for (int sample = 0; sample < data.numSamples; sample++)
+        {
+            for (int channel = 0; channel < minChannelCount && is32; channel++)
+            {
+                data.outputs[0].channelBuffers32[channel][sample]
+                    = segment->channels[channel][playhead];
+            }
+
+            for (int channel = 0; channel < minChannelCount && is64; channel++)
+            {
+                data.outputs[0].channelBuffers64[channel][sample]
+                    = segment->channels[channel][playhead];
+            }
+
+            playhead = (playhead + 1) % segment->sampleCount;
+        }
+
+        data.outputs[0].silenceFlags = 0;
+        return kResultOk;
+    }
+
+    void TurnTableKnobProcessor::audioSegmentFilePathChanged(string filePath)
+    {
+        AudioSegment32* oldSegment = segment;
+        segment = AudioSegment32::fromFile(filePath);
+        playhead = 0.0;
+
+        if (oldSegment)
+        {
+            delete oldSegment;
+        }
+    }
+}

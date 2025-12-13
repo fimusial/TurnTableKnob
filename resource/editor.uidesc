@@ -1,0 +1,65 @@
+{
+    "vstgui-ui-description": {
+        "version": "1",
+        "bitmaps": {},
+        "fonts": {},
+        "colors": {},
+        "control-tags": {},
+        "custom": {
+            "FocusDrawing": {},
+            "VST3Editor": {
+                "Path": "D:/Data/code/cpp/turn-table-knob/TurnTableKnob/resource/editor.uidesc"
+            },
+            "UIGridController": {
+                "Grids": "1x 1,5x 5,10x 10,12x 12,15x 15"
+            },
+            "UITemplateController": {
+                "SelectedTemplate": "view"
+            },
+            "UIEditController": {
+                "EditViewScale": "1",
+                "EditorSize": "0, 0, 1210, 770",
+                "SplitViewSize_0_0": "0.8252688172043011194389805496030021458864",
+                "SplitViewSize_0_1": "0.1478494623655914053106386063518584705889",
+                "SplitViewSize_1_0": "0.4858870967741935609218728586711222305894",
+                "SplitViewSize_1_1": "0.5073924731182796188377892576681915670633",
+                "SplitViewSize_2_0": "0.85123966942148765468800775124691426754",
+                "SplitViewSize_2_1": "0.1446280991735537091447127977517084218562",
+                "TabSwitchValue": "0",
+                "Version": "1"
+            },
+            "UIAttributesController": {},
+            "UIViewCreatorDataSource": {
+                "SelectedRow": "28"
+            }
+        },
+        "templates": {
+            "view": {
+                "attributes": {
+                    "background-color": "~ BlackCColor",
+                    "background-color-draw-style": "filled and stroked",
+                    "class": "CViewContainer",
+                    "mouse-enabled": "true",
+                    "opacity": "1",
+                    "origin": "0, 0",
+                    "size": "710, 400",
+                    "transparent": "false",
+                    "wants-focus": "false"
+                },
+                "children": {
+                    "TimelineControl": {
+                        "attributes": {
+                            "class": "TimelineControl",
+                            "opacity": "1",
+                            "origin": "100, 60",
+                            "size": "400, 150",
+                            "transparent": "false",
+                            "wants-focus": "false",
+                            "wheel-inc-value": "0.1"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
