@@ -10,6 +10,8 @@ namespace TTK
             return result;
         }
 
+        // TODO: add automation parameters
+        // TODO: implement MIDI learn
         return result;
     }
 
@@ -51,7 +53,6 @@ namespace TTK
     tresult PLUGIN_API TurnTableKnobController::onLiveMIDIControllerInput(
         int32 busIndex, int16 channel, CtrlNumber midiCC)
     {
-        // TODO
         return kResultOk;
     }
 }

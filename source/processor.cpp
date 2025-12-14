@@ -3,7 +3,10 @@
 namespace TTK
 {
     TurnTableKnobProcessor::TurnTableKnobProcessor()
-        : timelineControlFactory(this)
+        : playhead(0),
+        speakerArrangement(0),
+        timelineControlFactory(*this),
+        segment(nullptr)
     {
         setControllerClass(kTurnTableKnobControllerUID);
     }
@@ -83,6 +86,7 @@ namespace TTK
 
     tresult PLUGIN_API TurnTableKnobProcessor::process(ProcessData& data)
     {
+        // TODO: receive DAW automation parameter changes; UI parameter changes must still take precedence
         if (data.numOutputs == 0 || data.numSamples == 0)
         {
             return kResultOk;
@@ -90,11 +94,11 @@ namespace TTK
 
         bool is32 = processSetup.symbolicSampleSize == kSample32;
         bool is64 = processSetup.symbolicSampleSize == kSample64;
-        int channelCount = SpeakerArr::getChannelCount(speakerArrangement);
+        int outputChannelCount = SpeakerArr::getChannelCount(speakerArrangement);
 
         if (!segment)
         {
-            for (int channel = 0; channel < channelCount; channel++)
+            for (int channel = 0; channel < outputChannelCount; channel++)
             {
                 for (int sample = 0; sample < data.numSamples && is32; sample++)
                 {
@@ -107,13 +111,13 @@ namespace TTK
                 }
             }
 
-            data.outputs[0].silenceFlags = ((uint64)1 << channelCount) - 1;
+            data.outputs[0].silenceFlags = ((uint64)1 << outputChannelCount) - 1;
             return kResultOk;
         }
 
-        int minChannelCount = channelCount < segment->channelCount
-            ? channelCount
-            : segment->channelCount;
+        int minChannelCount = outputChannelCount < segment->channels.size()
+            ? outputChannelCount
+            : segment->channels.size();
 
         for (int sample = 0; sample < data.numSamples; sample++)
         {
@@ -136,11 +140,11 @@ namespace TTK
         return kResultOk;
     }
 
-    void TurnTableKnobProcessor::audioSegmentFilePathChanged(string filePath)
+    void TurnTableKnobProcessor::audioSegmentChanged(AudioSegment32* newSegment)
     {
         AudioSegment32* oldSegment = segment;
-        segment = AudioSegment32::fromFile(filePath);
         playhead = 0.0;
+        segment = newSegment;
 
         if (oldSegment)
         {

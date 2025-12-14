@@ -12,13 +12,13 @@ namespace TTK
     class TimelineControlFactory : public ViewCreatorAdapter
     {
     public:
-        TimelineControlFactory(ITimelineControlListener* changeListener);
+        TimelineControlFactory(ITimelineControlProcessor& processor);
         ~TimelineControlFactory();
         IdStringPtr getViewName() const override;
         IdStringPtr getBaseViewName() const override;
         CView* create(const UIAttributes& attributes, const IUIDescription* description) const override;
 
     private:
-        ITimelineControlListener* changeListener = nullptr;
+        ITimelineControlProcessor& processor;
     };
 }

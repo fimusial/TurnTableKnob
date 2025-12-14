@@ -9,9 +9,10 @@ namespace TTK
 {
     struct AudioSegment32
     {
-        int channelCount = 0;
-        double sampleRate = 0;
-        size_t sampleCount = 0;
+        AudioSegment32(double sampleRate, size_t sampleCount);
+
+        double sampleRate;
+        size_t sampleCount;
         vector<vector<float>> channels;
 
         static AudioSegment32* fromFile(string path);

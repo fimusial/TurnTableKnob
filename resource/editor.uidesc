@@ -3,7 +3,9 @@
         "version": "1",
         "bitmaps": {},
         "fonts": {},
-        "colors": {},
+        "colors": {
+            "Background": "#111111ff"
+        },
         "control-tags": {},
         "custom": {
             "FocusDrawing": {},
@@ -18,31 +20,34 @@
             },
             "UIEditController": {
                 "EditViewScale": "1",
-                "EditorSize": "0, 0, 1210, 770",
+                "EditorSize": "0, 0, 1856, 770",
                 "SplitViewSize_0_0": "0.8252688172043011194389805496030021458864",
                 "SplitViewSize_0_1": "0.1478494623655914053106386063518584705889",
-                "SplitViewSize_1_0": "0.4858870967741935609218728586711222305894",
-                "SplitViewSize_1_1": "0.5073924731182796188377892576681915670633",
-                "SplitViewSize_2_0": "0.85123966942148765468800775124691426754",
-                "SplitViewSize_2_1": "0.1446280991735537091447127977517084218562",
-                "TabSwitchValue": "0",
+                "SplitViewSize_1_0": "0.4865591397849462484970217701629735529423",
+                "SplitViewSize_1_1": "0.5080645161290322509017869379022158682346",
+                "SplitViewSize_2_0": "0.6961206896551723755095508749946020543575",
+                "SplitViewSize_2_1": "0.3011853448275861877547754374973010271788",
+                "TabSwitchValue": "2",
                 "Version": "1"
             },
             "UIAttributesController": {},
             "UIViewCreatorDataSource": {
                 "SelectedRow": "28"
+            },
+            "UIColorsDataSource": {
+                "SelectedRow": "0"
             }
         },
         "templates": {
             "view": {
                 "attributes": {
-                    "background-color": "~ BlackCColor",
-                    "background-color-draw-style": "filled and stroked",
+                    "background-color": "Background",
+                    "background-color-draw-style": "filled",
                     "class": "CViewContainer",
                     "mouse-enabled": "true",
                     "opacity": "1",
                     "origin": "0, 0",
-                    "size": "710, 400",
+                    "size": "1200, 300",
                     "transparent": "false",
                     "wants-focus": "false"
                 },
@@ -51,8 +56,8 @@
                         "attributes": {
                             "class": "TimelineControl",
                             "opacity": "1",
-                            "origin": "100, 60",
-                            "size": "400, 150",
+                            "origin": "0, 0",
+                            "size": "1200, 200",
                             "transparent": "false",
                             "wants-focus": "false",
                             "wheel-inc-value": "0.1"

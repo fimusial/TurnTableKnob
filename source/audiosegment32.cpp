@@ -5,6 +5,12 @@
 
 namespace TTK
 {
+    AudioSegment32::AudioSegment32(double sampleRate, size_t sampleCount)
+        : sampleRate(sampleRate),
+        sampleCount(sampleCount)
+    {
+    }
+
     AudioSegment32* AudioSegment32::fromFile(string path)
     {
         const string ext = ".wav";
@@ -26,18 +32,16 @@ namespace TTK
             return nullptr;
         }
 
-        AudioSegment32* segment = new AudioSegment32();
-        segment->channelCount = channelCount;
-        segment->sampleRate = sampleRate;
-        segment->sampleCount = sampleCount;
+        AudioSegment32* segment = new AudioSegment32(sampleRate, sampleCount);
 
         segment->channels.resize(channelCount);
-        for (int c = 0; c < channelCount; c++)
+        for (int channel = 0; channel < channelCount; channel++)
         {
-            segment->channels[c].resize(sampleCount);
-            for (int s = 0; s < sampleCount; s++)
+            segment->channels[channel].resize(sampleCount);
+            for (size_t sample = 0; sample < sampleCount; sample++)
             {
-                segment->channels[c][s] = interleaved[s * channelCount + c];
+                segment->channels[channel][sample]
+                    = interleaved[sample * channelCount + channel];
             }
         }
 

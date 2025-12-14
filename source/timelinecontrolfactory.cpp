@@ -2,8 +2,8 @@
 
 namespace TTK
 {
-    TimelineControlFactory::TimelineControlFactory(ITimelineControlListener* changeListener)
-        : changeListener(changeListener)
+    TimelineControlFactory::TimelineControlFactory(ITimelineControlProcessor& processor)
+        : processor(processor)
     {
         UIViewFactory::registerViewCreator(*this);
     }
@@ -26,7 +26,18 @@ namespace TTK
     CView* TimelineControlFactory::create(
         const UIAttributes& attributes, const IUIDescription* description) const
     {
-        CRect size(CPoint(45, 45), CPoint(400, 150));
-        return new TimelineControl(size, changeListener);
+        CPoint origin;
+        if (!attributes.getPointAttribute("origin", origin))
+        {
+            return nullptr;
+        }
+
+        CPoint size;
+        if (!attributes.getPointAttribute("size", size))
+        {
+            return nullptr;
+        }
+
+        return new TimelineControl(CRect(origin, size), processor);
     }
 }
