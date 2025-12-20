@@ -58,6 +58,7 @@
                             "opacity": "1",
                             "origin": "0, 0",
                             "size": "1200, 200",
+                            "textbox-size": "200, 20",
                             "transparent": "false",
                             "wants-focus": "false",
                             "wheel-inc-value": "0.1"

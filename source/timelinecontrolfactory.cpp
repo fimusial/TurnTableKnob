@@ -38,6 +38,15 @@ namespace TTK
             return nullptr;
         }
 
-        return new TimelineControl(CRect(origin, size), processor);
+        CPoint textBoxSize;
+        if (!attributes.getPointAttribute("textbox-size", textBoxSize))
+        {
+            return nullptr;
+        }
+
+        return new TimelineControl(
+            CRect(origin, size),
+            CRect(origin, textBoxSize),
+            processor);
     }
 }

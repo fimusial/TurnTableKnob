@@ -2,19 +2,15 @@
 
 namespace TTK
 {
-    TimelineControl::TimelineControl(const CRect& size, ITimelineControlProcessor& processor)
+    TimelineControl::TimelineControl(const CRect& size, CRect textBox, ITimelineControlProcessor& processor)
         : CControl(size),
+        textBox(textBox),
         processor(processor),
+        uiFilePath(DefaultUiFilePath),
         waveform(0)
     {
-        AudioSegment32* segment = processor.getSegment();
-        string filePath = processor.getFilePath();
-
-        if (segment && !filePath.empty())
-        {
-            //readFilePathText(filePath);
-            readWaveform(segment);
-        }
+        readWaveform();
+        readUiFilePath();
     }
 
     TimelineControl::~TimelineControl()
@@ -23,23 +19,39 @@ namespace TTK
 
     void TimelineControl::draw(CDrawContext* context)
     {
-        CRect sizeRect = getViewSize();
+        CRect viewSize = getViewSize();
 
         // background
-        context->setFillColor(backgroundColor);
-        context->drawRect(sizeRect, kDrawFilled);
+        context->setFillColor(BackgroundColor);
+        context->drawRect(viewSize, kDrawFilled);
 
         // waveform
-        context->setFrameColor(waveformColor);
+        context->setFrameColor(WaveformColor);
         if (waveform.size() > 1)
         {
             context->drawPolygon(waveform, kDrawStroked);
         }
+
+        // text box
+        CRect stringBox = textBox;
+        stringBox.inset(4, 4);
+        stringBox.offset(0, -1);
+        context->setFontColor(TextColor);
+        context->setFont(kSystemFont, stringBox.getHeight());
+        context->drawString(uiFilePath, stringBox, kRightText);
+        context->setLineWidth(1);
+        context->setFrameColor(TextBoxColor);
+        context->drawRect(textBox, kDrawStroked);
     }
 
     void TimelineControl::onMouseDownEvent(MouseDownEvent& event)
     {
         if (!event.buttonState.isLeft())
+        {
+            return;
+        }
+
+        if (!textBox.pointInside(event.mousePosition))
         {
             return;
         }
@@ -64,19 +76,26 @@ namespace TTK
             return;
         }
 
-        AudioSegment32* newSegment = processor.processNewFilePath(selectorResult);
-        if (newSegment)
+        if (processor.processNewFilePath(selectorResult))
         {
-            readWaveform(newSegment);
+            readWaveform();
+            readUiFilePath();
             invalid();
         }
 
         selector->forget();
     }
 
-    void TimelineControl::readWaveform(AudioSegment32* segment)
+    void TimelineControl::readWaveform()
     {
         waveform.clear();
+
+        AudioSegment32* segment = processor.getSegment();
+        if (!segment)
+        {
+            return;
+        }
+
         waveform.resize(segment->sampleCount / SampleWaveformRatio);
 
         int channelCount = segment->channels.size();
@@ -92,5 +111,11 @@ namespace TTK
             double y = ((sum / channelCount) + 1) / 2 * height;
             waveform[waveformSample] = CPoint(waveformSample, y);
         }
+    }
+
+    void TimelineControl::readUiFilePath()
+    {
+        string filePath = processor.getFilePath();
+        uiFilePath = filePath.empty() ? DefaultUiFilePath : filePath;
     }
 }

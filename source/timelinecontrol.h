@@ -20,20 +20,26 @@ namespace TTK
     class TimelineControl : public CControl
     {
     public:
-        TimelineControl(const CRect& size, ITimelineControlProcessor& processor);
+        TimelineControl(const CRect& size, CRect textBox, ITimelineControlProcessor& processor);
         ~TimelineControl();
         void draw(CDrawContext* context) override;
         void onMouseDownEvent(MouseDownEvent& event) override;
         CLASS_METHODS(TimelineControl, CControl);
 
     private:
-        const CColor backgroundColor = CColor(0x07, 0x07, 0x07);
-        const CColor waveformColor = CColor(0xcc, 0x00, 0xcc);
+        const CColor BackgroundColor = CColor(0x07, 0x07, 0x07);
+        const CColor WaveformColor = CColor(0xdd, 0xdd, 0xdd);
+        const CColor TextBoxColor = CColor(0x71, 0x71, 0x71);
+        const CColor TextColor = CColor(0xff, 0xff, 0xff);
+        const char* DefaultUiFilePath = "select a .wav file...";
         const double SampleWaveformRatio = 64.0;
 
+        CRect textBox;
         ITimelineControlProcessor& processor;
+        UTF8String uiFilePath;
         vector<CPoint> waveform;
 
-        void readWaveform(AudioSegment32* segment);
+        void readWaveform();
+        void readUiFilePath();
     };
 }
