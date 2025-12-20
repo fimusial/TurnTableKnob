@@ -6,6 +6,7 @@ namespace TTK
         : playhead(0),
         speakerArrangement(0),
         timelineControlFactory(*this),
+        filePath(""),
         segment(nullptr)
     {
         setControllerClass(kTurnTableKnobControllerUID);
@@ -140,9 +141,21 @@ namespace TTK
         return kResultOk;
     }
 
-    void TurnTableKnobProcessor::audioSegmentChanged(AudioSegment32* newSegment)
+    AudioSegment32* TurnTableKnobProcessor::processNewFilePath(string newFilePath)
     {
+        if (newFilePath.empty())
+        {
+            return nullptr;
+        }
+
+        AudioSegment32* newSegment = AudioSegment32::fromFile(newFilePath);
+        if (!newSegment)
+        {
+            return nullptr;
+        }
+
         AudioSegment32* oldSegment = segment;
+        filePath = newFilePath;
         playhead = 0.0;
         segment = newSegment;
 
@@ -150,5 +163,17 @@ namespace TTK
         {
             delete oldSegment;
         }
+
+        return newSegment;
+    }
+
+    AudioSegment32* TurnTableKnobProcessor::getSegment()
+    {
+        return segment;
+    }
+
+    string TurnTableKnobProcessor::getFilePath()
+    {
+        return filePath;
     }
 }

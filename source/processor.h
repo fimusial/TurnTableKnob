@@ -37,12 +37,15 @@ namespace TTK
         tresult PLUGIN_API getState(IBStream* state) SMTG_OVERRIDE;
         tresult PLUGIN_API process(ProcessData& data) SMTG_OVERRIDE;
 
-        void audioSegmentChanged(AudioSegment32* newSegment) override;
+        AudioSegment32* processNewFilePath(string newFilePath) override;
+        AudioSegment32* getSegment() override;
+        string getFilePath() override;
 
     private:
         size_t playhead;
         SpeakerArrangement speakerArrangement;
         TimelineControlFactory timelineControlFactory;
+        string filePath;
         AudioSegment32* segment;
     };
 }

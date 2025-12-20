@@ -12,7 +12,9 @@ namespace TTK
     class ITimelineControlProcessor
     {
     public:
-        virtual void audioSegmentChanged(AudioSegment32* newSegment) = 0;
+        virtual AudioSegment32* processNewFilePath(string newFilePath) = 0;
+        virtual AudioSegment32* getSegment() = 0;
+        virtual string getFilePath() = 0;
     };
 
     class TimelineControl : public CControl
@@ -30,7 +32,6 @@ namespace TTK
         const double SampleWaveformRatio = 64.0;
 
         ITimelineControlProcessor& processor;
-        string filePath;
         vector<CPoint> waveform;
 
         void readWaveform(AudioSegment32* segment);

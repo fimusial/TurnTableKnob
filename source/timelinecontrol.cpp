@@ -5,9 +5,16 @@ namespace TTK
     TimelineControl::TimelineControl(const CRect& size, ITimelineControlProcessor& processor)
         : CControl(size),
         processor(processor),
-        filePath(""),
         waveform(0)
     {
+        AudioSegment32* segment = processor.getSegment();
+        string filePath = processor.getFilePath();
+
+        if (segment && !filePath.empty())
+        {
+            //readFilePathText(filePath);
+            readWaveform(segment);
+        }
     }
 
     TimelineControl::~TimelineControl()
@@ -50,31 +57,21 @@ namespace TTK
         selector->setDefaultExtension(CFileExtension("WAVE", "wav"));
         selector->run(this);
 
-        string newFilePath = "";
         const char* selectorResult = selector->getSelectedFile(0);
-        if (selectorResult)
+        if (!selectorResult)
         {
-            newFilePath = selectorResult;
+            selector->forget();
+            return;
+        }
+
+        AudioSegment32* newSegment = processor.processNewFilePath(selectorResult);
+        if (newSegment)
+        {
+            readWaveform(newSegment);
+            invalid();
         }
 
         selector->forget();
-
-        if (newFilePath.empty() || filePath.compare(newFilePath) == 0)
-        {
-            return;
-        }
-
-        AudioSegment32* newSegment = AudioSegment32::fromFile(newFilePath);
-        if (!newSegment)
-        {
-            return;
-        }
-
-        // TODO: remember state when editor is reopened
-        readWaveform(newSegment);
-        filePath = newFilePath;
-        processor.audioSegmentChanged(newSegment);
-        invalid();
     }
 
     void TimelineControl::readWaveform(AudioSegment32* segment)
