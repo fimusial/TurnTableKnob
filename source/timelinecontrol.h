@@ -2,6 +2,7 @@
 
 #include "vstgui/vstgui.h"
 
+#include "cids.h"
 #include "audiosegment32.h"
 
 using namespace std;
@@ -20,7 +21,8 @@ namespace TTK
     class TimelineControl : public CControl
     {
     public:
-        TimelineControl(const CRect& size, CRect textBox, ITimelineControlProcessor& processor);
+        TimelineControl(const CRect& size, CRect textBox,
+            IControlListener* listener, ITimelineControlProcessor& processor);
         ~TimelineControl();
         void draw(CDrawContext* context) override;
         void onMouseDownEvent(MouseDownEvent& event) override;

@@ -15,7 +15,7 @@ namespace TTK
 {
     class TurnTableKnobProcessor
         : public AudioEffect,
-        ITimelineControlProcessor
+        public ITimelineControlProcessor
     {
     public:
         TurnTableKnobProcessor();
@@ -42,10 +42,16 @@ namespace TTK
         string getFilePath() override;
 
     private:
-        size_t playhead;
         SpeakerArrangement speakerArrangement;
         TimelineControlFactory timelineControlFactory;
         string filePath;
         AudioSegment32* segment;
+
+        bool playForward;
+        size_t playhead;
+
+        void beginParameterChanges(IParameterChanges* changes);
+        void endParameterChanges();
+        void processSamples(ProcessData& data);
     };
 }

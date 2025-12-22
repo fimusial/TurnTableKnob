@@ -10,7 +10,9 @@ namespace TTK
             return result;
         }
 
-        // TODO: add automation parameters
+        parameters.addParameter(
+            STR16("PlayForward"), nullptr, 1, 0, ParameterInfo::kCanAutomate, PlayForward);
+
         // TODO: implement MIDI learn
         return result;
     }
@@ -22,6 +24,7 @@ namespace TTK
 
     tresult PLUGIN_API TurnTableKnobController::setComponentState(IBStream* state)
     {
+        // TODO
         if (!state)
         {
             return kResultFalse;

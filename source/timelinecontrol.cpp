@@ -2,8 +2,9 @@
 
 namespace TTK
 {
-    TimelineControl::TimelineControl(const CRect& size, CRect textBox, ITimelineControlProcessor& processor)
-        : CControl(size),
+    TimelineControl::TimelineControl(const CRect& size, CRect textBox,
+        IControlListener* listener, ITimelineControlProcessor& processor)
+        : CControl(size, listener, PlayForward),
         textBox(textBox),
         processor(processor),
         uiFilePath(DefaultUiFilePath),
@@ -53,6 +54,10 @@ namespace TTK
 
         if (!textBox.pointInside(event.mousePosition))
         {
+            beginEdit();
+            setValue(value == 1.0 ? 0.0 : 1.0);
+            valueChanged();
+            endEdit();
             return;
         }
 

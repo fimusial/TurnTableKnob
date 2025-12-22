@@ -47,6 +47,7 @@ namespace TTK
         return new TimelineControl(
             CRect(origin, size),
             CRect(origin, textBoxSize),
+            description->getControlListener("TurnTableKnobController"),
             processor);
     }
 }

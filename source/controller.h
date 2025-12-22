@@ -11,7 +11,9 @@ using namespace Vst;
 
 namespace TTK
 {
-    class TurnTableKnobController : public EditControllerEx1, public IMidiLearn
+    class TurnTableKnobController
+        : public EditControllerEx1,
+        public IMidiLearn
     {
     public:
         TurnTableKnobController() = default;
@@ -25,10 +27,9 @@ namespace TTK
         tresult PLUGIN_API initialize(FUnknown* context) SMTG_OVERRIDE;
         tresult PLUGIN_API terminate() SMTG_OVERRIDE;
         tresult PLUGIN_API setComponentState(IBStream* state) SMTG_OVERRIDE;
-        IPlugView* PLUGIN_API createView(FIDString name) SMTG_OVERRIDE;
         tresult PLUGIN_API setState(IBStream* state) SMTG_OVERRIDE;
         tresult PLUGIN_API getState(IBStream* state) SMTG_OVERRIDE;
-
+        IPlugView* PLUGIN_API createView(FIDString name) SMTG_OVERRIDE;
         tresult PLUGIN_API onLiveMIDIControllerInput(
             int32 busIndex, int16 channel, CtrlNumber midiCC) SMTG_OVERRIDE;
 
