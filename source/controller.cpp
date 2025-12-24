@@ -11,7 +11,7 @@ namespace TTK
         }
 
         parameters.addParameter(
-            STR16("PlayForward"), nullptr, 1, 0, ParameterInfo::kCanAutomate, PlayForward);
+            STR16("Playhead"), nullptr, 0, 0, ParameterInfo::kCanAutomate, Playhead);
 
         // TODO: implement MIDI learn
         return result;

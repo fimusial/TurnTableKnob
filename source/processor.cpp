@@ -5,10 +5,9 @@ namespace TTK
     TurnTableKnobProcessor::TurnTableKnobProcessor()
         : speakerArrangement(0),
         timelineControlFactory(*this),
-        filePath(""),
         segment(nullptr),
-        playForward(false),
-        playhead(0)
+        filePath(""),
+        timelineRange(0.0)
     {
         setControllerClass(kTurnTableKnobControllerUID);
     }
@@ -90,7 +89,7 @@ namespace TTK
 
     tresult PLUGIN_API TurnTableKnobProcessor::process(ProcessData& data)
     {
-        beginParameterChanges(data.inputParameterChanges);
+        beginParameterChanges(data);
         processSamples(data);
         endParameterChanges();
         return kResultOk;
@@ -111,7 +110,6 @@ namespace TTK
 
         AudioSegment32* oldSegment = segment;
         filePath = newFilePath;
-        playhead = 0.0;
         segment = newSegment;
 
         if (oldSegment)
@@ -132,38 +130,45 @@ namespace TTK
         return filePath;
     }
 
-    void TurnTableKnobProcessor::beginParameterChanges(IParameterChanges* changes)
+    void TurnTableKnobProcessor::setTimelineRange(double range)
     {
-        if (!changes)
+        timelineRange = range;
+    }
+
+    void TurnTableKnobProcessor::beginParameterChanges(ProcessData& data)
+    {
+        if (!data.inputParameterChanges)
         {
             return;
         }
 
-        int count = changes->getParameterCount();
+        int count = data.inputParameterChanges->getParameterCount();
         for (int i = 0; i < count; i++)
         {
-            IParamValueQueue* queue = changes->getParameterData(i);
+            IParamValueQueue* queue = data.inputParameterChanges->getParameterData(i);
             if (!queue)
             {
                 continue;
             }
 
-            if (queue->getParameterId() == PlayForward)
+            // TODO: should use SampleAccurate::Parameter when being automated, this is for the UI control
+            int _;
+            double value;
+            if (queue->getParameterId() == Playhead && queue->getPoint(0, _, value) == kResultTrue)
             {
-                int sampleOffset;
-                ParamValue value;
-                queue->getPoint(queue->getPointCount() - 1, sampleOffset, value);
-                playForward = value > 0;
+                playhead.beginChanges(data.numSamples, value);
             }
         }
     }
 
     void TurnTableKnobProcessor::endParameterChanges()
     {
+        playhead.endChanges();
     }
 
     void TurnTableKnobProcessor::processSamples(ProcessData& data)
     {
+        // TODO: no output in Cubase
         if (data.numOutputs == 0 || data.numSamples == 0)
         {
             return;
@@ -173,7 +178,7 @@ namespace TTK
         bool is64 = processSetup.symbolicSampleSize == kSample64;
         int outputChannelCount = SpeakerArr::getChannelCount(speakerArrangement);
 
-        if (!segment || !playForward)
+        if (!segment)
         {
             for (int channel = 0; channel < outputChannelCount; channel++)
             {
@@ -192,28 +197,25 @@ namespace TTK
             return;
         }
 
-        int minChannelCount = outputChannelCount < segment->channels.size()
-            ? outputChannelCount
-            : segment->channels.size();
+        int minChannelCount = min<int>(outputChannelCount, segment->channels.size());
 
         for (int sample = 0; sample < data.numSamples; sample++)
         {
+            size_t playheadIndex = min<size_t>(playhead.at(sample) * timelineRange, segment->sampleCount - 1);
+
             for (int channel = 0; channel < minChannelCount && is32; channel++)
             {
                 data.outputs[0].channelBuffers32[channel][sample]
-                    = segment->channels[channel][playhead];
+                    = segment->channels[channel][playheadIndex];
             }
 
             for (int channel = 0; channel < minChannelCount && is64; channel++)
             {
                 data.outputs[0].channelBuffers64[channel][sample]
-                    = segment->channels[channel][playhead];
+                    = segment->channels[channel][playheadIndex];
             }
-
-            playhead = (playhead + 1) % segment->sampleCount;
         }
 
         data.outputs[0].silenceFlags = 0;
-        return;
     }
 }

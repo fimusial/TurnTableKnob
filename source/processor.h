@@ -7,6 +7,7 @@
 #include "cids.h"
 #include "timelinecontrol.h"
 #include "timelinecontrolfactory.h"
+#include "lerpfollowparameter.h"
 
 using namespace Steinberg;
 using namespace Vst;
@@ -40,17 +41,21 @@ namespace TTK
         AudioSegment32* processNewFilePath(string newFilePath) override;
         AudioSegment32* getSegment() override;
         string getFilePath() override;
+        void setTimelineRange(double range) override;
 
     private:
         SpeakerArrangement speakerArrangement;
         TimelineControlFactory timelineControlFactory;
-        string filePath;
         AudioSegment32* segment;
 
-        bool playForward;
-        size_t playhead;
+        // persistent plugin state
+        string filePath;
+        double timelineRange;
 
-        void beginParameterChanges(IParameterChanges* changes);
+        // TODO: RTTransferT<double> rttPlayhead;
+        LerpFollowParameter playhead;
+
+        void beginParameterChanges(ProcessData& data);
         void endParameterChanges();
         void processSamples(ProcessData& data);
     };

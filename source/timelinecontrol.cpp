@@ -4,12 +4,13 @@ namespace TTK
 {
     TimelineControl::TimelineControl(const CRect& size, CRect textBox,
         IControlListener* listener, ITimelineControlProcessor& processor)
-        : CControl(size, listener, PlayForward),
+        : CControl(size, listener, Playhead),
         textBox(textBox),
         processor(processor),
         uiFilePath(DefaultUiFilePath),
         waveform(0)
     {
+        processor.setTimelineRange(size.getWidth() * SampleWaveformRatio);
         readWaveform();
         readUiFilePath();
     }
@@ -47,21 +48,42 @@ namespace TTK
 
     void TimelineControl::onMouseDownEvent(MouseDownEvent& event)
     {
+        if (textBox.pointInside(event.mousePosition))
+        {
+            onTextBoxMouseDownEvent(event);
+        }
+        else
+        {
+            onTimelineMouseDownEvent(event);
+        }
+
+        event.consumed = true;
+    }
+
+    void TimelineControl::onMouseMoveEvent(MouseMoveEvent& event)
+    {
+        onTimelineMouseMoveEvent(event);
+        event.consumed = true;
+    }
+
+    void TimelineControl::onMouseUpEvent(MouseUpEvent& event)
+    {
+        onTimelineMouseUpEvent(event);
+        event.consumed = true;
+    }
+
+    void TimelineControl::onMouseWheelEvent(MouseWheelEvent& event)
+    {
+        // TODO: move waveform window
+        event.consumed = true;
+    }
+
+    void TimelineControl::onTextBoxMouseDownEvent(MouseDownEvent& event)
+    {
         if (!event.buttonState.isLeft())
         {
             return;
         }
-
-        if (!textBox.pointInside(event.mousePosition))
-        {
-            beginEdit();
-            setValue(value == 1.0 ? 0.0 : 1.0);
-            valueChanged();
-            endEdit();
-            return;
-        }
-
-        event.consumed = true;
 
         CNewFileSelector* selector = CNewFileSelector::create(getFrame(), CNewFileSelector::kSelectFile);
         if (!selector)
@@ -69,7 +91,7 @@ namespace TTK
             return;
         }
 
-        selector->setTitle("Choose an audio file");
+        selector->setTitle("Select an audio file");
         selector->setAllowMultiFileSelection(false);
         selector->setDefaultExtension(CFileExtension("WAVE", "wav"));
         selector->run(this);
@@ -89,6 +111,29 @@ namespace TTK
         }
 
         selector->forget();
+    }
+
+    void TimelineControl::onTimelineMouseDownEvent(MouseDownEvent& event)
+    {
+        beginEdit();
+    }
+
+    void TimelineControl::onTimelineMouseMoveEvent(MouseMoveEvent& event)
+    {
+        if (!isEditing())
+        {
+            return;
+        }
+
+        // TODO: end edit on mouse leave
+        // TODO: CKnob has better resolution somehow
+        setValue(event.mousePosition.x / getViewSize().getWidth());
+        valueChanged();
+    }
+
+    void TimelineControl::onTimelineMouseUpEvent(MouseUpEvent& event)
+    {
+        endEdit();
     }
 
     void TimelineControl::readWaveform()
