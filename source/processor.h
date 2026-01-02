@@ -44,7 +44,6 @@ namespace TTK
         void setTimelineRange(double range) override;
 
     private:
-        SpeakerArrangement speakerArrangement;
         TimelineControlFactory timelineControlFactory;
         AudioSegment32* segment;
 

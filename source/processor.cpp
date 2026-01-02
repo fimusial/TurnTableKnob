@@ -3,8 +3,7 @@
 namespace TTK
 {
     TurnTableKnobProcessor::TurnTableKnobProcessor()
-        : speakerArrangement(0),
-        timelineControlFactory(*this),
+        : timelineControlFactory(*this),
         segment(nullptr),
         filePath(""),
         timelineRange(0.0)
@@ -46,14 +45,7 @@ namespace TTK
             return kResultFalse;
         }
 
-        tresult result = AudioEffect::setBusArrangements(inputs, numIns, outputs, numOuts);
-        if (result != kResultOk)
-        {
-            return result;
-        }
-
-        speakerArrangement = outputs[0];
-        return kResultOk;
+        return AudioEffect::setBusArrangements(inputs, numIns, outputs, numOuts);
     }
 
     tresult PLUGIN_API TurnTableKnobProcessor::canProcessSampleSize(int32 symbolicSampleSize)
@@ -168,19 +160,17 @@ namespace TTK
 
     void TurnTableKnobProcessor::processSamples(ProcessData& data)
     {
-        // TODO: no output in Cubase
-        if (data.numOutputs == 0 || data.numSamples == 0)
+        if (data.numOutputs != 1 || data.numSamples <= 0)
         {
             return;
         }
 
         bool is32 = processSetup.symbolicSampleSize == kSample32;
         bool is64 = processSetup.symbolicSampleSize == kSample64;
-        int outputChannelCount = SpeakerArr::getChannelCount(speakerArrangement);
 
         if (!segment)
         {
-            for (int channel = 0; channel < outputChannelCount; channel++)
+            for (int channel = 0; channel < data.outputs->numChannels; channel++)
             {
                 for (int sample = 0; sample < data.numSamples && is32; sample++)
                 {
@@ -193,11 +183,11 @@ namespace TTK
                 }
             }
 
-            data.outputs[0].silenceFlags = ((uint64)1 << outputChannelCount) - 1;
+            data.outputs[0].silenceFlags = ((uint64)1 << data.outputs->numChannels) - 1;
             return;
         }
 
-        int minChannelCount = min<int>(outputChannelCount, segment->channels.size());
+        int minChannelCount = min<int>(data.outputs->numChannels, segment->channels.size());
 
         for (int sample = 0; sample < data.numSamples; sample++)
         {
