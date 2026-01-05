@@ -16,7 +16,6 @@ namespace TTK
         virtual AudioSegment32* processNewFilePath(string newFilePath) = 0;
         virtual AudioSegment32* getSegment() = 0;
         virtual string getFilePath() = 0;
-        virtual void setTimelineRange(double range) = 0;
     };
 
     class TimelineControl : public CControl
@@ -45,10 +44,6 @@ namespace TTK
         UTF8String uiFilePath;
         vector<CPoint> waveform;
 
-        void onTextBoxMouseDownEvent(MouseDownEvent& event);
-        void onTimelineMouseDownEvent(MouseDownEvent& event);
-        void onTimelineMouseMoveEvent(MouseMoveEvent& event);
-        void onTimelineMouseUpEvent(MouseUpEvent& event);
         void readWaveform();
         void readUiFilePath();
     };

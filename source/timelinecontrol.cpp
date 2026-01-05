@@ -4,13 +4,12 @@ namespace TTK
 {
     TimelineControl::TimelineControl(const CRect& size, CRect textBox,
         IControlListener* listener, ITimelineControlProcessor& processor)
-        : CControl(size, listener, Playhead),
+        : CControl(size, listener, Speed),
         textBox(textBox),
         processor(processor),
         uiFilePath(DefaultUiFilePath),
         waveform(0)
     {
-        processor.setTimelineRange(size.getWidth() * SampleWaveformRatio);
         readWaveform();
         readUiFilePath();
     }
@@ -31,7 +30,7 @@ namespace TTK
         context->setFrameColor(WaveformColor);
         if (waveform.size() > 1)
         {
-            context->drawPolygon(waveform, kDrawStroked);
+            //context->drawPolygon(waveform, kDrawStroked);
         }
 
         // text box
@@ -44,44 +43,28 @@ namespace TTK
         context->setLineWidth(1);
         context->setFrameColor(TextBoxColor);
         context->drawRect(textBox, kDrawStroked);
+
+        setDirty(false);
     }
 
     void TimelineControl::onMouseDownEvent(MouseDownEvent& event)
     {
-        if (textBox.pointInside(event.mousePosition))
-        {
-            onTextBoxMouseDownEvent(event);
-        }
-        else
-        {
-            onTimelineMouseDownEvent(event);
-        }
-
-        event.consumed = true;
-    }
-
-    void TimelineControl::onMouseMoveEvent(MouseMoveEvent& event)
-    {
-        onTimelineMouseMoveEvent(event);
-        event.consumed = true;
-    }
-
-    void TimelineControl::onMouseUpEvent(MouseUpEvent& event)
-    {
-        onTimelineMouseUpEvent(event);
-        event.consumed = true;
-    }
-
-    void TimelineControl::onMouseWheelEvent(MouseWheelEvent& event)
-    {
-        // TODO: move waveform window
-        event.consumed = true;
-    }
-
-    void TimelineControl::onTextBoxMouseDownEvent(MouseDownEvent& event)
-    {
         if (!event.buttonState.isLeft())
         {
+            return;
+        }
+
+        event.consumed = true;
+
+        if (!textBox.pointInside(event.mousePosition))
+        {
+            if (!isEditing())
+            {
+                beginEdit();
+                setValue(event.mousePosition.x / getViewSize().getWidth());
+                valueChanged();
+            }
+
             return;
         }
 
@@ -113,27 +96,40 @@ namespace TTK
         selector->forget();
     }
 
-    void TimelineControl::onTimelineMouseDownEvent(MouseDownEvent& event)
-    {
-        beginEdit();
-    }
-
-    void TimelineControl::onTimelineMouseMoveEvent(MouseMoveEvent& event)
+    void TimelineControl::onMouseMoveEvent(MouseMoveEvent& event)
     {
         if (!isEditing())
         {
             return;
         }
 
-        // TODO: end edit on mouse leave
-        // TODO: CKnob has better resolution somehow
         setValue(event.mousePosition.x / getViewSize().getWidth());
         valueChanged();
+
+        event.consumed = true;
     }
 
-    void TimelineControl::onTimelineMouseUpEvent(MouseUpEvent& event)
+    void TimelineControl::onMouseUpEvent(MouseUpEvent& event)
     {
-        endEdit();
+        if (!event.buttonState.isLeft())
+        {
+            return;
+        }
+
+        if (isEditing())
+        {
+            setValue(0.5);
+            valueChanged();
+            endEdit();
+        }
+
+        event.consumed = true;
+    }
+
+    void TimelineControl::onMouseWheelEvent(MouseWheelEvent& event)
+    {
+        // TODO: move waveform window
+        event.consumed = true;
     }
 
     void TimelineControl::readWaveform()
@@ -148,7 +144,7 @@ namespace TTK
 
         waveform.resize(segment->sampleCount / SampleWaveformRatio);
 
-        int channelCount = segment->channels.size();
+        int channelCount = (int)segment->channels.size();
         double height = getViewSize().getHeight();
         for (size_t waveformSample = 0; waveformSample < waveform.size(); waveformSample++)
         {

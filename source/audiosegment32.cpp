@@ -35,7 +35,7 @@ namespace TTK
         AudioSegment32* segment = new AudioSegment32(sampleRate, sampleCount);
 
         segment->channels.resize(channelCount);
-        for (int channel = 0; channel < channelCount; channel++)
+        for (unsigned int channel = 0; channel < channelCount; channel++)
         {
             segment->channels[channel].resize(sampleCount);
             for (size_t sample = 0; sample < sampleCount; sample++)

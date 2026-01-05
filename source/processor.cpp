@@ -6,7 +6,7 @@ namespace TTK
         : timelineControlFactory(*this),
         segment(nullptr),
         filePath(""),
-        timelineRange(0.0)
+        speed(Speed, 0.5)
     {
         setControllerClass(kTurnTableKnobControllerUID);
     }
@@ -102,6 +102,7 @@ namespace TTK
 
         AudioSegment32* oldSegment = segment;
         filePath = newFilePath;
+        playhead = 0.0;
         segment = newSegment;
 
         if (oldSegment)
@@ -122,11 +123,6 @@ namespace TTK
         return filePath;
     }
 
-    void TurnTableKnobProcessor::setTimelineRange(double range)
-    {
-        timelineRange = range;
-    }
-
     void TurnTableKnobProcessor::beginParameterChanges(ProcessData& data)
     {
         if (!data.inputParameterChanges)
@@ -143,19 +139,16 @@ namespace TTK
                 continue;
             }
 
-            // TODO: should use SampleAccurate::Parameter when being automated, this is for the UI control
-            int _;
-            double value;
-            if (queue->getParameterId() == Playhead && queue->getPoint(0, _, value) == kResultTrue)
+            if (queue->getParameterId() == Speed)
             {
-                playhead.beginChanges(data.numSamples, value);
+                speed.beginChanges(queue);
             }
         }
     }
 
     void TurnTableKnobProcessor::endParameterChanges()
     {
-        playhead.endChanges();
+        speed.endChanges();
     }
 
     void TurnTableKnobProcessor::processSamples(ProcessData& data)
@@ -187,23 +180,36 @@ namespace TTK
             return;
         }
 
-        int minChannelCount = min<int>(data.outputs->numChannels, segment->channels.size());
+        int minChannelCount = min<int>(data.outputs->numChannels, (int)segment->channels.size());
 
         for (int sample = 0; sample < data.numSamples; sample++)
         {
-            size_t playheadIndex = min<size_t>(playhead.at(sample) * timelineRange, segment->sampleCount - 1);
+            double diff = speed.getValue() * 8 - 4;
+            playhead += diff;
+
+            if (playhead < 0)
+            {
+                playhead = diff < 0 ? segment->sampleCount - 1 : 0;
+            }
+
+            if (playhead >= segment->sampleCount)
+            {
+                playhead = diff > 0 ? 0 : segment->sampleCount;
+            }
 
             for (int channel = 0; channel < minChannelCount && is32; channel++)
             {
                 data.outputs[0].channelBuffers32[channel][sample]
-                    = segment->channels[channel][playheadIndex];
+                    = segment->channels[channel][playhead];
             }
 
             for (int channel = 0; channel < minChannelCount && is64; channel++)
             {
                 data.outputs[0].channelBuffers64[channel][sample]
-                    = segment->channels[channel][playheadIndex];
+                    = segment->channels[channel][playhead];
             }
+
+            speed.advance(1);
         }
 
         data.outputs[0].silenceFlags = 0;

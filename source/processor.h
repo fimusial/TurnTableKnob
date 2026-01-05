@@ -3,6 +3,7 @@
 #include "public.sdk/source/vst/vstaudioeffect.h"
 #include "base/source/fstreamer.h"
 #include "pluginterfaces/vst/ivstparameterchanges.h"
+#include "public.sdk/source/vst/utility/sampleaccurate.h"
 
 #include "cids.h"
 #include "timelinecontrol.h"
@@ -41,7 +42,6 @@ namespace TTK
         AudioSegment32* processNewFilePath(string newFilePath) override;
         AudioSegment32* getSegment() override;
         string getFilePath() override;
-        void setTimelineRange(double range) override;
 
     private:
         TimelineControlFactory timelineControlFactory;
@@ -49,10 +49,10 @@ namespace TTK
 
         // persistent plugin state
         string filePath;
-        double timelineRange;
+        double playhead = 0;
 
-        // TODO: RTTransferT<double> rttPlayhead;
-        LerpFollowParameter playhead;
+        // TODO: RTTransferT<double> rtt;
+        SampleAccurate::Parameter speed;
 
         void beginParameterChanges(ProcessData& data);
         void endParameterChanges();

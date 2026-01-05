@@ -12,13 +12,13 @@ namespace TTK
     void LerpFollowParameter::beginChanges(int nextBlockSize, double nextValue)
     {
         blockSize = nextBlockSize;
-        last = next;
         next = nextValue;
     }
 
     void LerpFollowParameter::endChanges()
     {
-        last = -1.0;
+        last = next;
+        next = -1.0;
     }
 
     double LerpFollowParameter::at(int sample)
