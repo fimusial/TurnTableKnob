@@ -2,13 +2,11 @@
 
 #include "public.sdk/source/vst/vstaudioeffect.h"
 #include "base/source/fstreamer.h"
-#include "pluginterfaces/vst/ivstparameterchanges.h"
-#include "public.sdk/source/vst/utility/sampleaccurate.h"
 
 #include "cids.h"
 #include "timelinecontrol.h"
 #include "timelinecontrolfactory.h"
-#include "lerpfollowparameter.h"
+#include "smoothfollowparameter.h"
 
 using namespace Steinberg;
 using namespace Vst;
@@ -47,12 +45,11 @@ namespace TTK
         TimelineControlFactory timelineControlFactory;
         AudioSegment32* segment;
 
-        // persistent plugin state
+        // TODO: persist plugin state
         string filePath;
-        double playhead = 0;
 
         // TODO: RTTransferT<double> rtt;
-        SampleAccurate::Parameter speed;
+        SmoothFollowParameter playhead;
 
         void beginParameterChanges(ProcessData& data);
         void endParameterChanges();

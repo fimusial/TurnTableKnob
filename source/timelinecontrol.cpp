@@ -4,7 +4,7 @@ namespace TTK
 {
     TimelineControl::TimelineControl(const CRect& size, CRect textBox,
         IControlListener* listener, ITimelineControlProcessor& processor)
-        : CControl(size, listener, Speed),
+        : CControl(size, listener, Playhead),
         textBox(textBox),
         processor(processor),
         uiFilePath(DefaultUiFilePath),
@@ -118,8 +118,6 @@ namespace TTK
 
         if (isEditing())
         {
-            setValue(0.5);
-            valueChanged();
             endEdit();
         }
 

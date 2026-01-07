@@ -15,6 +15,6 @@ namespace TTK
 
     enum ParameterIds : ParamID
     {
-        Speed = 256,
+        Playhead = 256,
     };
 }

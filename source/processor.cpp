@@ -6,7 +6,7 @@ namespace TTK
         : timelineControlFactory(*this),
         segment(nullptr),
         filePath(""),
-        speed(Speed, 0.5)
+        playhead(Playhead)
     {
         setControllerClass(kTurnTableKnobControllerUID);
     }
@@ -102,7 +102,7 @@ namespace TTK
 
         AudioSegment32* oldSegment = segment;
         filePath = newFilePath;
-        playhead = 0.0;
+        playhead.reset();
         segment = newSegment;
 
         if (oldSegment)
@@ -139,16 +139,16 @@ namespace TTK
                 continue;
             }
 
-            if (queue->getParameterId() == Speed)
+            if (queue->getParameterId() == Playhead)
             {
-                speed.beginChanges(queue);
+               playhead.beginChanges(queue);
             }
         }
     }
 
     void TurnTableKnobProcessor::endParameterChanges()
     {
-        speed.endChanges();
+        playhead.endChanges();
     }
 
     void TurnTableKnobProcessor::processSamples(ProcessData& data)
@@ -163,16 +163,16 @@ namespace TTK
 
         if (!segment)
         {
-            for (int channel = 0; channel < data.outputs->numChannels; channel++)
+            for (int c = 0; c < data.outputs->numChannels; c++)
             {
-                for (int sample = 0; sample < data.numSamples && is32; sample++)
+                for (int i = 0; i < data.numSamples && is32; i++)
                 {
-                    data.outputs[0].channelBuffers32[channel][sample] = 0.0f;
+                    data.outputs[0].channelBuffers32[c][i] = 0.0f;
                 }
 
-                for (int sample = 0; sample < data.numSamples && is64; sample++)
+                for (int i = 0; i < data.numSamples && is64; i++)
                 {
-                    data.outputs[0].channelBuffers64[channel][sample] = 0.0;
+                    data.outputs[0].channelBuffers64[c][i] = 0.0;
                 }
             }
 
@@ -180,36 +180,23 @@ namespace TTK
             return;
         }
 
-        int minChannelCount = min<int>(data.outputs->numChannels, (int)segment->channels.size());
+        int channelCount = min<int>(data.outputs->numChannels, (int)segment->channels.size());
 
-        for (int sample = 0; sample < data.numSamples; sample++)
+        for (int i = 0; i < data.numSamples; i++)
         {
-            double diff = speed.getValue() * 8 - 4;
-            playhead += diff;
-
-            if (playhead < 0)
+            for (int c = 0; c < channelCount && is32; c++)
             {
-                playhead = diff < 0 ? segment->sampleCount - 1 : 0;
+                data.outputs[0].channelBuffers32[c][i]
+                    = segment->channels[c][playhead.getValue() * (double)segment->sampleCount];
             }
 
-            if (playhead >= segment->sampleCount)
+            for (int c = 0; c < channelCount && is64; c++)
             {
-                playhead = diff > 0 ? 0 : segment->sampleCount;
+                data.outputs[0].channelBuffers64[c][i]
+                    = segment->channels[c][playhead.getValue() * (double)segment->sampleCount];
             }
 
-            for (int channel = 0; channel < minChannelCount && is32; channel++)
-            {
-                data.outputs[0].channelBuffers32[channel][sample]
-                    = segment->channels[channel][playhead];
-            }
-
-            for (int channel = 0; channel < minChannelCount && is64; channel++)
-            {
-                data.outputs[0].channelBuffers64[channel][sample]
-                    = segment->channels[channel][playhead];
-            }
-
-            speed.advance(1);
+            playhead.advance();
         }
 
         data.outputs[0].silenceFlags = 0;
