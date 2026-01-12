@@ -1,6 +1,5 @@
 #pragma once
 
-#include "pluginterfaces/vst/ivstparameterchanges.h"
 #include "public.sdk/source/vst/utility/sampleaccurate.h"
 
 using namespace Steinberg;

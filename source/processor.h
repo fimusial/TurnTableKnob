@@ -1,10 +1,7 @@
 #pragma once
 
 #include "public.sdk/source/vst/vstaudioeffect.h"
-#include "base/source/fstreamer.h"
 
-#include "cids.h"
-#include "timelinecontrol.h"
 #include "timelinecontrolfactory.h"
 #include "smoothfollowparameter.h"
 
@@ -37,16 +34,16 @@ namespace TTK
         tresult PLUGIN_API getState(IBStream* state) SMTG_OVERRIDE;
         tresult PLUGIN_API process(ProcessData& data) SMTG_OVERRIDE;
 
-        AudioSegment32* processNewFilePath(string newFilePath) override;
+        AudioSegment32* processNewFilePath(std::string newFilePath) override;
         AudioSegment32* getSegment() override;
-        string getFilePath() override;
+        std::string getFilePath() override;
 
     private:
         TimelineControlFactory timelineControlFactory;
         AudioSegment32* segment;
 
         // TODO: persist plugin state
-        string filePath;
+        std::string filePath;
 
         // TODO: RTTransferT<double> rtt;
         SmoothFollowParameter playhead;

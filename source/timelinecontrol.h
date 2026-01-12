@@ -2,22 +2,12 @@
 
 #include "vstgui/vstgui.h"
 
-#include "cids.h"
-#include "audiosegment32.h"
+#include "itimelinecontrolprocessor.h"
 
-using namespace std;
 using namespace VSTGUI;
 
 namespace TTK
 {
-    class ITimelineControlProcessor
-    {
-    public:
-        virtual AudioSegment32* processNewFilePath(string newFilePath) = 0;
-        virtual AudioSegment32* getSegment() = 0;
-        virtual string getFilePath() = 0;
-    };
-
     class TimelineControl : public CControl
     {
     public:
@@ -42,7 +32,7 @@ namespace TTK
         CRect textBox;
         ITimelineControlProcessor& processor;
         UTF8String uiFilePath;
-        vector<CPoint> waveform;
+        std::vector<CPoint> waveform;
 
         void readWaveform();
         void readUiFilePath();

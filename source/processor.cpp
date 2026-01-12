@@ -1,5 +1,8 @@
 #include "processor.h"
 
+#include "base/source/fstreamer.h"
+#include "cids.h"
+
 namespace TTK
 {
     TurnTableKnobProcessor::TurnTableKnobProcessor()
@@ -87,7 +90,7 @@ namespace TTK
         return kResultOk;
     }
 
-    AudioSegment32* TurnTableKnobProcessor::processNewFilePath(string newFilePath)
+    AudioSegment32* TurnTableKnobProcessor::processNewFilePath(std::string newFilePath)
     {
         if (newFilePath.empty())
         {
@@ -118,7 +121,7 @@ namespace TTK
         return segment;
     }
 
-    string TurnTableKnobProcessor::getFilePath()
+    std::string TurnTableKnobProcessor::getFilePath()
     {
         return filePath;
     }

@@ -1,5 +1,7 @@
 #include "timelinecontrol.h"
 
+#include "cids.h"
+
 namespace TTK
 {
     TimelineControl::TimelineControl(const CRect& size, CRect textBox,
@@ -159,7 +161,7 @@ namespace TTK
 
     void TimelineControl::readUiFilePath()
     {
-        string filePath = processor.getFilePath();
+        std::string filePath = processor.getFilePath();
         uiFilePath = filePath.empty() ? DefaultUiFilePath : filePath;
     }
 }

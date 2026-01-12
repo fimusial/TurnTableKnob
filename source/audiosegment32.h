@@ -3,8 +3,6 @@
 #include "string"
 #include "vector"
 
-using namespace std;
-
 namespace TTK
 {
     struct AudioSegment32
@@ -13,8 +11,8 @@ namespace TTK
 
         double sampleRate;
         size_t sampleCount;
-        vector<vector<float>> channels;
+        std::vector<std::vector<float>> channels;
 
-        static AudioSegment32* fromFile(string path);
+        static AudioSegment32* fromFile(std::string path);
     };
 }

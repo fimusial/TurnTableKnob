@@ -2,9 +2,6 @@
 
 #include "public.sdk/source/vst/vsteditcontroller.h"
 #include "pluginterfaces/vst/ivstmidilearn.h"
-#include "vstgui/plugin-bindings/vst3editor.h"
-
-#include "cids.h"
 
 using namespace Steinberg;
 using namespace Vst;

@@ -1,5 +1,8 @@
 #include "timelinecontrolfactory.h"
 
+#include "vstgui/uidescription/detail/uiviewcreatorattributes.h"
+#include "timelinecontrol.h"
+
 namespace TTK
 {
     TimelineControlFactory::TimelineControlFactory(ITimelineControlProcessor& processor)

@@ -1,5 +1,8 @@
 #include "controller.h"
 
+#include "vstgui/plugin-bindings/vst3editor.h"
+#include "cids.h"
+
 namespace TTK
 {
     tresult PLUGIN_API TurnTableKnobController::initialize(FUnknown* context)

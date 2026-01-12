@@ -11,9 +11,9 @@ namespace TTK
     {
     }
 
-    AudioSegment32* AudioSegment32::fromFile(string path)
+    AudioSegment32* AudioSegment32::fromFile(std::string path)
     {
-        const string ext = ".wav";
+        const std::string ext = ".wav";
         if (path.size() <= ext.size()
             || path.compare(path.size() - ext.size(), ext.size(), ext) != 0)
         {

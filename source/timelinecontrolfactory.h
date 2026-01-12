@@ -1,9 +1,8 @@
 #pragma once
 
 #include "vstgui/vstgui_uidescription.h"
-#include "vstgui/uidescription/detail/uiviewcreatorattributes.h"
 
-#include "timelinecontrol.h"
+#include "itimelinecontrolprocessor.h"
 
 using namespace VSTGUI;
 
