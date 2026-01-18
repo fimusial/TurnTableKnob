@@ -52,4 +52,6 @@ namespace TTK
         void endParameterChanges();
         void processSamples(ProcessData& data);
     };
+
+    static const double VOLUME_DAMPING_SCALE = 25000.0;
 }

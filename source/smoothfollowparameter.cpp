@@ -27,6 +27,11 @@ namespace TTK
         return value;
     }
 
+    double SmoothFollowParameter::getVelocity()
+    {
+        return velocity;
+    }
+
     double SmoothFollowParameter::advance()
     {
         double diff = parameter.getValue() - value;
@@ -41,6 +46,7 @@ namespace TTK
 
     void SmoothFollowParameter::reset()
     {
+        parameter.setValue(0.0);
         velocity = 0.0;
         value = 0.0;
     }

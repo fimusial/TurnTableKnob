@@ -2,6 +2,7 @@
 
 #include "base/source/fstreamer.h"
 #include "cids.h"
+#include "cmath"
 
 namespace TTK
 {
@@ -187,16 +188,20 @@ namespace TTK
 
         for (int i = 0; i < data.numSamples; i++)
         {
-            for (int c = 0; c < channelCount && is32; c++)
+            for (int c = 0; c < channelCount; c++)
             {
-                data.outputs[0].channelBuffers32[c][i]
-                    = segment->channels[c][playhead.getValue() * (double)segment->sampleCount];
-            }
+                double sample = std::abs(std::tanh(playhead.getVelocity() * VOLUME_DAMPING_SCALE))
+                    * segment->channels[c][playhead.getValue() * (double)segment->sampleCount];
 
-            for (int c = 0; c < channelCount && is64; c++)
-            {
-                data.outputs[0].channelBuffers64[c][i]
-                    = segment->channels[c][playhead.getValue() * (double)segment->sampleCount];
+                if (is32)
+                {
+                    data.outputs[0].channelBuffers32[c][i] = sample;
+                }
+
+                if (is64)
+                {
+                    data.outputs[0].channelBuffers64[c][i] = sample;
+                }
             }
 
             playhead.advance();
