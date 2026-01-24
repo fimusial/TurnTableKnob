@@ -10,6 +10,8 @@ namespace TTK
         : timelineControlFactory(*this),
         segment(nullptr),
         filePath(""),
+        segmentStart(0),
+        segmentEnd(MIN_SEGMENT_WINDOW_SIZE),
         playhead(Playhead)
     {
         setControllerClass(kTurnTableKnobControllerUID);
@@ -106,6 +108,8 @@ namespace TTK
 
         AudioSegment32* oldSegment = segment;
         filePath = newFilePath;
+        segmentStart = 0;
+        segmentEnd = MIN_SEGMENT_WINDOW_SIZE;
         playhead.reset();
         segment = newSegment;
 
@@ -125,6 +129,49 @@ namespace TTK
     std::string TurnTableKnobProcessor::getFilePath()
     {
         return filePath;
+    }
+
+    size_t TurnTableKnobProcessor::getSegmentStart()
+    {
+        return segmentStart;
+    }
+
+    size_t TurnTableKnobProcessor::getSegmentEnd()
+    {
+        return segmentEnd;
+    }
+
+    void TurnTableKnobProcessor::scrollSegment(int by)
+    {
+        if (by < 0 && -by > segmentStart)
+        {
+            by = -segmentStart;
+        }
+
+        if (by > 0 && by + segmentEnd >= segment->sampleCount)
+        {
+            by = segment->sampleCount - segmentEnd - 1;
+        }
+
+        segmentStart += by;
+        segmentEnd += by;
+        playhead.reset();
+    }
+
+    void TurnTableKnobProcessor::zoomSegment(int by)
+    {
+        if (by < 0 && segmentEnd - segmentStart + by < MIN_SEGMENT_WINDOW_SIZE)
+        {
+            by = segmentStart + MIN_SEGMENT_WINDOW_SIZE - segmentEnd;
+        }
+
+        if (by > 0 && by + segmentEnd >= segment->sampleCount)
+        {
+            by = segment->sampleCount - segmentEnd - 1;
+        }
+
+        segmentEnd += by;
+        playhead.reset();
     }
 
     void TurnTableKnobProcessor::beginParameterChanges(ProcessData& data)
@@ -190,8 +237,18 @@ namespace TTK
         {
             for (int c = 0; c < channelCount; c++)
             {
-                double sample = std::abs(std::tanh(playhead.getVelocity() * VOLUME_DAMPING_SCALE))
-                    * segment->channels[c][playhead.getValue() * (double)segment->sampleCount];
+                /*double volume = std::abs(std::tanh(playhead.getVelocity() * VOLUME_DAMPING_SCALE));
+                size_t sampleIndex = segmentStart + playhead.getValue() * (segmentEnd - segmentStart);
+                double sample = 0 <= sampleIndex && sampleIndex < segment->sampleCount
+                    ? volume * segment->channels[c][sampleIndex]
+                    : 0.0;*/
+
+                double precise = (double)segmentStart + playhead.getValue() * (double)(segmentEnd - segmentStart);
+                size_t indexA = segmentStart + playhead.getValue() * (segmentEnd - segmentStart);
+                size_t indexB = indexA < segment->sampleCount - 1 ? indexA + 1 : indexA;
+                double sampleA = segment->channels[c][indexA];
+                double sampleB = segment->channels[c][indexB];
+                double sample = (sampleB - sampleA) * (precise - indexA) + sampleA;
 
                 if (is32)
                 {

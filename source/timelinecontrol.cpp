@@ -9,7 +9,7 @@ namespace TTK
         : CControl(size, listener, Playhead),
         textBox(textBox),
         processor(processor),
-        uiFilePath(DefaultUiFilePath),
+        uiFilePath(DEFAULT_UI_FILE_PATH),
         waveform(0)
     {
         readWaveform();
@@ -32,7 +32,15 @@ namespace TTK
         context->setFrameColor(WaveformColor);
         if (waveform.size() > 1)
         {
-            //context->drawPolygon(waveform, kDrawStroked);
+            double start = (double)processor.getSegmentStart() / SAMPLE_WAVEFORM_RATIO;
+            double end = (double)processor.getSegmentEnd() / SAMPLE_WAVEFORM_RATIO;
+
+            CDrawContext::Transform _(*context, CGraphicsTransform()
+                .translate(-start, 0.0)
+                .scale(viewSize.getWidth() / (end - start), 1.0)
+                );
+
+            context->drawPolygon(waveform, kDrawStroked);
         }
 
         // text box
@@ -128,7 +136,18 @@ namespace TTK
 
     void TimelineControl::onMouseWheelEvent(MouseWheelEvent& event)
     {
-        // TODO: move waveform window
+        int direction = event.deltaY > 0.0 ? 1 : -1;
+
+        if (event.modifiers.has(ModifierKey::Control))
+        {
+            processor.zoomSegment(ZOOM_SPEED * direction);
+        }
+        else
+        {
+            processor.scrollSegment(SCROLL_SPEED * direction);
+        }
+
+        invalid();
         event.consumed = true;
     }
 
@@ -142,7 +161,7 @@ namespace TTK
             return;
         }
 
-        waveform.resize(segment->sampleCount / SampleWaveformRatio);
+        waveform.resize(segment->sampleCount / SAMPLE_WAVEFORM_RATIO);
 
         int channelCount = (int)segment->channels.size();
         double height = getViewSize().getHeight();
@@ -151,7 +170,7 @@ namespace TTK
             double sum = 0.0;
             for (int channel = 0; channel < channelCount; channel++)
             {
-                sum += segment->channels[channel][waveformSample * SampleWaveformRatio];
+                sum += segment->channels[channel][waveformSample * SAMPLE_WAVEFORM_RATIO];
             }
 
             double y = ((sum / channelCount) + 1) / 2 * height;
@@ -162,6 +181,6 @@ namespace TTK
     void TimelineControl::readUiFilePath()
     {
         std::string filePath = processor.getFilePath();
-        uiFilePath = filePath.empty() ? DefaultUiFilePath : filePath;
+        uiFilePath = filePath.empty() ? DEFAULT_UI_FILE_PATH : filePath;
     }
 }

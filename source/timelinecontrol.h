@@ -26,8 +26,6 @@ namespace TTK
         const CColor WaveformColor = CColor(0xdd, 0xdd, 0xdd);
         const CColor TextBoxColor = CColor(0x71, 0x71, 0x71);
         const CColor TextColor = CColor(0xff, 0xff, 0xff);
-        const char* DefaultUiFilePath = "select a .wav file...";
-        const double SampleWaveformRatio = 64.0;
 
         CRect textBox;
         ITimelineControlProcessor& processor;
@@ -37,4 +35,9 @@ namespace TTK
         void readWaveform();
         void readUiFilePath();
     };
+
+    static const char* DEFAULT_UI_FILE_PATH = "select a .wav file...";
+    static const double SAMPLE_WAVEFORM_RATIO = 128.0;
+    static const int SCROLL_SPEED = 10240.0;
+    static const int ZOOM_SPEED = 10240.0;
 }

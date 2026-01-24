@@ -37,6 +37,10 @@ namespace TTK
         AudioSegment32* processNewFilePath(std::string newFilePath) override;
         AudioSegment32* getSegment() override;
         std::string getFilePath() override;
+        size_t getSegmentStart() override;
+        size_t getSegmentEnd() override;
+        void scrollSegment(int samples) override;
+        void zoomSegment(int samples) override;
 
     private:
         TimelineControlFactory timelineControlFactory;
@@ -44,6 +48,8 @@ namespace TTK
 
         // TODO: persist plugin state
         std::string filePath;
+        size_t segmentStart;
+        size_t segmentEnd;
 
         // TODO: RTTransferT<double> rtt;
         SmoothFollowParameter playhead;
@@ -53,5 +59,6 @@ namespace TTK
         void processSamples(ProcessData& data);
     };
 
-    static const double VOLUME_DAMPING_SCALE = 25000.0;
+    //static const double VOLUME_DAMPING_SCALE = 25000.0;
+    static const int MIN_SEGMENT_WINDOW_SIZE = 32768;
 }
