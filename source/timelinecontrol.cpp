@@ -9,11 +9,16 @@ namespace TTK
         : CControl(size, listener, Playhead),
         textBox(textBox),
         processor(processor),
-        uiFilePath(DEFAULT_UI_FILE_PATH),
+        filePath(DEFAULT_FILE_PATH),
         waveform(0)
     {
         readWaveform();
-        readUiFilePath();
+        readFilePath();
+
+        timer = makeOwned<CVSTGUITimer>(
+            [this](auto*) { invalid(); },
+            TIMER_DELAY_MS,
+            true);
     }
 
     TimelineControl::~TimelineControl()
@@ -30,11 +35,12 @@ namespace TTK
 
         // waveform
         context->setFrameColor(WaveformColor);
+
+        // TODO: high segmentStart causes lag in audio
         if (waveform.size() > 1)
         {
             double start = (double)processor.getSegmentStart() / SAMPLE_WAVEFORM_RATIO;
             double end = (double)processor.getSegmentEnd() / SAMPLE_WAVEFORM_RATIO;
-
             CDrawContext::Transform _(*context, CGraphicsTransform()
                 .translate(-start, 0.0)
                 .scale(viewSize.getWidth() / (end - start), 1.0)
@@ -43,13 +49,19 @@ namespace TTK
             context->drawPolygon(waveform, kDrawStroked);
         }
 
+        // playhead
+        double playheadX = processor.getPlayhead() * viewSize.getWidth();
+        CRect playheadLine(playheadX - 1.0, 0.0, playheadX + 1.0, viewSize.getHeight());
+        context->setFillColor(PlayheadColor);
+        context->drawRect(playheadLine, kDrawFilled);
+
         // text box
         CRect stringBox = textBox;
         stringBox.inset(4, 4);
         stringBox.offset(0, -1);
         context->setFontColor(TextColor);
         context->setFont(kSystemFont, stringBox.getHeight());
-        context->drawString(uiFilePath, stringBox, kRightText);
+        context->drawString(filePath, stringBox, kRightText);
         context->setLineWidth(1);
         context->setFrameColor(TextBoxColor);
         context->drawRect(textBox, kDrawStroked);
@@ -99,7 +111,7 @@ namespace TTK
         if (processor.processNewFilePath(selectorResult))
         {
             readWaveform();
-            readUiFilePath();
+            readFilePath();
             invalid();
         }
 
@@ -178,9 +190,9 @@ namespace TTK
         }
     }
 
-    void TimelineControl::readUiFilePath()
+    void TimelineControl::readFilePath()
     {
-        std::string filePath = processor.getFilePath();
-        uiFilePath = filePath.empty() ? DEFAULT_UI_FILE_PATH : filePath;
+        std::string newFilePath = processor.getFilePath();
+        filePath = newFilePath.empty() ? DEFAULT_FILE_PATH : newFilePath;
     }
 }

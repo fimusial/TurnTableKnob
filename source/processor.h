@@ -39,6 +39,7 @@ namespace TTK
         std::string getFilePath() override;
         size_t getSegmentStart() override;
         size_t getSegmentEnd() override;
+        double getPlayhead() override;
         void scrollSegment(int samples) override;
         void zoomSegment(int samples) override;
 
@@ -59,6 +60,5 @@ namespace TTK
         void processSamples(ProcessData& data);
     };
 
-    //static const double VOLUME_DAMPING_SCALE = 25000.0;
-    static const int MIN_SEGMENT_WINDOW_SIZE = 32768;
+    static const size_t MIN_WINDOW_SIZE = 32768;
 }

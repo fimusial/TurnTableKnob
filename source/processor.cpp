@@ -11,7 +11,7 @@ namespace TTK
         segment(nullptr),
         filePath(""),
         segmentStart(0),
-        segmentEnd(MIN_SEGMENT_WINDOW_SIZE),
+        segmentEnd(MIN_WINDOW_SIZE),
         playhead(Playhead)
     {
         setControllerClass(kTurnTableKnobControllerUID);
@@ -109,7 +109,7 @@ namespace TTK
         AudioSegment32* oldSegment = segment;
         filePath = newFilePath;
         segmentStart = 0;
-        segmentEnd = MIN_SEGMENT_WINDOW_SIZE;
+        segmentEnd = MIN_WINDOW_SIZE;
         playhead.reset();
         segment = newSegment;
 
@@ -141,16 +141,21 @@ namespace TTK
         return segmentEnd;
     }
 
+    double TurnTableKnobProcessor::getPlayhead()
+    {
+        return playhead.getValue();
+    }
+
     void TurnTableKnobProcessor::scrollSegment(int by)
     {
-        if (by < 0 && -by > segmentStart)
+        if (by < 0 && -by >(int)segmentStart)
         {
-            by = -segmentStart;
+            by = -(int)segmentStart;
         }
 
-        if (by > 0 && by + segmentEnd >= segment->sampleCount)
+        if (by > 0 && segmentEnd + by > segment->sampleCount - 2)
         {
-            by = segment->sampleCount - segmentEnd - 1;
+            by = int(segment->sampleCount - segmentEnd) - 2;
         }
 
         segmentStart += by;
@@ -160,14 +165,14 @@ namespace TTK
 
     void TurnTableKnobProcessor::zoomSegment(int by)
     {
-        if (by < 0 && segmentEnd - segmentStart + by < MIN_SEGMENT_WINDOW_SIZE)
+        if (by < 0 && segmentEnd - segmentStart + by < MIN_WINDOW_SIZE)
         {
-            by = segmentStart + MIN_SEGMENT_WINDOW_SIZE - segmentEnd;
+            by = int(segmentStart + MIN_WINDOW_SIZE - segmentEnd);
         }
 
-        if (by > 0 && by + segmentEnd >= segment->sampleCount)
+        if (by > 0 && segmentEnd + by > segment->sampleCount - 2)
         {
-            by = segment->sampleCount - segmentEnd - 1;
+            by = int(segment->sampleCount - segmentEnd) - 2;
         }
 
         segmentEnd += by;
@@ -235,29 +240,23 @@ namespace TTK
 
         for (int i = 0; i < data.numSamples; i++)
         {
+            double windowPlayhead = playhead.getValue() * double(segmentEnd - segmentStart);
+
             for (int c = 0; c < channelCount; c++)
             {
-                /*double volume = std::abs(std::tanh(playhead.getVelocity() * VOLUME_DAMPING_SCALE));
-                size_t sampleIndex = segmentStart + playhead.getValue() * (segmentEnd - segmentStart);
-                double sample = 0 <= sampleIndex && sampleIndex < segment->sampleCount
-                    ? volume * segment->channels[c][sampleIndex]
-                    : 0.0;*/
-
-                double precise = (double)segmentStart + playhead.getValue() * (double)(segmentEnd - segmentStart);
-                size_t indexA = segmentStart + playhead.getValue() * (segmentEnd - segmentStart);
-                size_t indexB = indexA < segment->sampleCount - 1 ? indexA + 1 : indexA;
-                double sampleA = segment->channels[c][indexA];
-                double sampleB = segment->channels[c][indexB];
-                double sample = (sampleB - sampleA) * (precise - indexA) + sampleA;
+                // TODO: reset the playhead with mouse position on mouse down event
+                double inSampleA = segment->channels[c][segmentStart + (size_t)windowPlayhead];
+                double inSampleB = segment->channels[c][segmentStart + (size_t)windowPlayhead + 1];
+                double outSample = (windowPlayhead - floor(windowPlayhead)) * (inSampleB - inSampleA) + inSampleA;
 
                 if (is32)
                 {
-                    data.outputs[0].channelBuffers32[c][i] = sample;
+                    data.outputs[0].channelBuffers32[c][i] = outSample;
                 }
 
                 if (is64)
                 {
-                    data.outputs[0].channelBuffers64[c][i] = sample;
+                    data.outputs[0].channelBuffers64[c][i] = outSample;
                 }
             }
 
