@@ -37,17 +37,16 @@ namespace TTK
         context->setFrameColor(WaveformColor);
 
         // TODO: high segmentStart causes lag in audio
-        if (waveform.size() > 1)
-        {
-            double start = (double)processor.getSegmentStart() / SAMPLE_WAVEFORM_RATIO;
-            double end = (double)processor.getSegmentEnd() / SAMPLE_WAVEFORM_RATIO;
-            CDrawContext::Transform _(*context, CGraphicsTransform()
-                .translate(-start, 0.0)
-                .scale(viewSize.getWidth() / (end - start), 1.0)
-                );
+        //if (waveform.size() > 1)
+        //{
+        //    double start = (double)processor.getSegmentStart() / SAMPLE_WAVEFORM_RATIO;
+        //    double end = (double)processor.getSegmentEnd() / SAMPLE_WAVEFORM_RATIO;
+        //    CDrawContext::Transform _(*context, CGraphicsTransform()
+        //        .translate(-start, 0.0)
+        //        .scale(viewSize.getWidth() / (end - start), 1.0));
 
-            context->drawPolygon(waveform, kDrawStroked);
-        }
+        //    context->drawPolygon(waveform, kDrawStroked);
+        //}
 
         // playhead
         double playheadX = processor.getPlayhead() * viewSize.getWidth();
@@ -84,6 +83,7 @@ namespace TTK
             {
                 beginEdit();
                 setValue(event.mousePosition.x / getViewSize().getWidth());
+                processor.resetPlayhead(getValue());
                 valueChanged();
             }
 

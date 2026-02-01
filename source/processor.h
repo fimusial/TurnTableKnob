@@ -40,6 +40,7 @@ namespace TTK
         size_t getSegmentStart() override;
         size_t getSegmentEnd() override;
         double getPlayhead() override;
+        void resetPlayhead(double newValue = 0.0) override;
         void scrollSegment(int samples) override;
         void zoomSegment(int samples) override;
 

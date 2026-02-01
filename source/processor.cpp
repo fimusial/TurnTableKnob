@@ -146,6 +146,11 @@ namespace TTK
         return playhead.getValue();
     }
 
+    void TurnTableKnobProcessor::resetPlayhead(double newValue)
+    {
+        playhead.reset(newValue);
+    }
+
     void TurnTableKnobProcessor::scrollSegment(int by)
     {
         if (by < 0 && -by >(int)segmentStart)
@@ -244,7 +249,7 @@ namespace TTK
 
             for (int c = 0; c < channelCount; c++)
             {
-                // TODO: reset the playhead with mouse position on mouse down event
+                // TODO: clicks
                 double inSampleA = segment->channels[c][segmentStart + (size_t)windowPlayhead];
                 double inSampleB = segment->channels[c][segmentStart + (size_t)windowPlayhead + 1];
                 double outSample = (windowPlayhead - floor(windowPlayhead)) * (inSampleB - inSampleA) + inSampleA;

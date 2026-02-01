@@ -15,9 +15,8 @@ namespace TTK
         void beginChanges(IParamValueQueue* queue);
         void endChanges();
         double getValue();
-        double getVelocity();
         double advance();
-        void reset();
+        void reset(double newValue = 0.0);
 
     private:
         SampleAccurate::Parameter parameter;
