@@ -37,9 +37,9 @@ namespace TTK
         AudioSegment32* processNewFilePath(std::string newFilePath) override;
         AudioSegment32* getSegment() override;
         std::string getFilePath() override;
-        size_t getSegmentStart() override;
-        size_t getSegmentEnd() override;
-        double getPlayhead() override;
+        size_t getWindowStart() override;
+        size_t getWindowEnd() override;
+        double getPlayheadValue() override;
         void resetPlayhead(double newValue = 0.0) override;
         void scrollSegment(int samples) override;
         void zoomSegment(int samples) override;
@@ -50,8 +50,8 @@ namespace TTK
 
         // TODO: persist plugin state
         std::string filePath;
-        size_t segmentStart;
-        size_t segmentEnd;
+        size_t windowStart;
+        size_t windowEnd;
 
         // TODO: RTTransferT<double> rtt;
         SmoothFollowParameter playhead;

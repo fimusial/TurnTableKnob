@@ -36,11 +36,11 @@ namespace TTK
         // waveform
         context->setFrameColor(WaveformColor);
 
-        // TODO: high segmentStart causes lag in audio
+        // TODO: high windowStart causes lag in audio
         //if (waveform.size() > 1)
         //{
-        //    double start = (double)processor.getSegmentStart() / SAMPLE_WAVEFORM_RATIO;
-        //    double end = (double)processor.getSegmentEnd() / SAMPLE_WAVEFORM_RATIO;
+        //    double start = (double)processor.getWindowStart() / SAMPLE_WAVEFORM_RATIO;
+        //    double end = (double)processor.getWindowEnd() / SAMPLE_WAVEFORM_RATIO;
         //    CDrawContext::Transform _(*context, CGraphicsTransform()
         //        .translate(-start, 0.0)
         //        .scale(viewSize.getWidth() / (end - start), 1.0));
@@ -48,11 +48,11 @@ namespace TTK
         //    context->drawPolygon(waveform, kDrawStroked);
         //}
 
-        // playhead
-        double playheadX = processor.getPlayhead() * viewSize.getWidth();
-        CRect playheadLine(playheadX - 1.0, 0.0, playheadX + 1.0, viewSize.getHeight());
+        // playhead bar
+        double playhead = processor.getPlayheadValue() * viewSize.getWidth();
+        CRect playheadBar(playhead - 1.0, 0.0, playhead + 1.0, viewSize.getHeight());
         context->setFillColor(PlayheadColor);
-        context->drawRect(playheadLine, kDrawFilled);
+        context->drawRect(playheadBar, kDrawFilled);
 
         // text box
         CRect stringBox = textBox;
