@@ -1,5 +1,6 @@
 #include "stdio.h"
 #include "windows.h"
+#include "vector"
 
 std::vector<double> _mydebug_prints(65536);
 

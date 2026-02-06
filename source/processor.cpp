@@ -2,7 +2,6 @@
 
 #include "base/source/fstreamer.h"
 #include "cids.h"
-#include "cmath"
 
 namespace TTK
 {
@@ -12,7 +11,8 @@ namespace TTK
         filePath(""),
         windowStart(0),
         windowEnd(MIN_WINDOW_SIZE),
-        playhead(Playhead)
+        playhead(Playhead),
+        deClicker(DE_CLICKER_STEP)
     {
         setControllerClass(kTurnTableKnobControllerUID);
     }
@@ -148,11 +148,21 @@ namespace TTK
 
     void TurnTableKnobProcessor::resetPlayhead(double newValue)
     {
+        if (!segment)
+        {
+            return;
+        }
+
         playhead.reset(newValue);
     }
 
     void TurnTableKnobProcessor::scrollSegment(int by)
     {
+        if (!segment)
+        {
+            return;
+        }
+
         if (by < 0 && -by >(int)windowStart)
         {
             by = -(int)windowStart;
@@ -163,13 +173,18 @@ namespace TTK
             by = int(segment->sampleCount - windowEnd) - 2;
         }
 
+        playhead.reset(playhead.getValue());
         windowStart += by;
         windowEnd += by;
-        playhead.reset();
     }
 
     void TurnTableKnobProcessor::zoomSegment(int by)
     {
+        if (!segment)
+        {
+            return;
+        }
+
         if (by < 0 && windowEnd - windowStart + by < MIN_WINDOW_SIZE)
         {
             by = int(windowStart + MIN_WINDOW_SIZE - windowEnd);
@@ -180,8 +195,8 @@ namespace TTK
             by = int(segment->sampleCount - windowEnd) - 2;
         }
 
+        playhead.reset(playhead.getValue());
         windowEnd += by;
-        playhead.reset();
     }
 
     void TurnTableKnobProcessor::beginParameterChanges(ProcessData& data)
@@ -241,7 +256,7 @@ namespace TTK
             return;
         }
 
-        int channelCount = min<int>(data.outputs->numChannels, (int)segment->channels.size());
+        int channelCount = std::min(data.outputs->numChannels, (int)segment->channels.size());
 
         for (int i = 0; i < data.numSamples; i++)
         {
@@ -249,10 +264,20 @@ namespace TTK
 
             for (int c = 0; c < channelCount; c++)
             {
-                // TODO: clicks
                 double inSampleA = segment->channels[c][windowStart + (size_t)windowPlayhead];
                 double inSampleB = segment->channels[c][windowStart + (size_t)windowPlayhead + 1];
                 double outSample = (windowPlayhead - floor(windowPlayhead)) * (inSampleB - inSampleA) + inSampleA;
+
+                if (std::abs(playhead.getAcceleration()) < ACCELERATION_THRESHOLD)
+                {
+                    deClicker.down();
+                }
+                else
+                {
+                    deClicker.up();
+                }
+
+                outSample *= deClicker.getGain();
 
                 if (is32)
                 {

@@ -49,10 +49,14 @@ namespace TTK
         //}
 
         // playhead bar
-        double playhead = processor.getPlayheadValue() * viewSize.getWidth();
-        CRect playheadBar(playhead - 1.0, 0.0, playhead + 1.0, viewSize.getHeight());
-        context->setFillColor(PlayheadColor);
-        context->drawRect(playheadBar, kDrawFilled);
+        double playhead = processor.getPlayheadValue();
+        if (0.0 < playhead && playhead < 1.0)
+        {
+            playhead *= viewSize.getWidth();
+            CRect playheadBar(playhead - 1.0, 0.0, playhead + 1.0, viewSize.getHeight());
+            context->setFillColor(PlayheadColor);
+            context->drawRect(playheadBar, kDrawFilled);
+        }
 
         // text box
         CRect stringBox = textBox;

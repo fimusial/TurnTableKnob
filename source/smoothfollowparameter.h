@@ -12,11 +12,12 @@ namespace TTK
     public:
         SmoothFollowParameter(
             unsigned int pid, double value = 0.0, double stiffness = 0.000125, double damping = 0.4);
+        void reset(double newValue = 0.0);
         void beginChanges(IParamValueQueue* queue);
         void endChanges();
         double getValue();
+        double getAcceleration();
         double advance();
-        void reset(double newValue = 0.0);
 
     private:
         SampleAccurate::Parameter parameter;
@@ -24,5 +25,6 @@ namespace TTK
         double stiffness;
         double damping;
         double velocity;
+        double acceleration;
     };
 }

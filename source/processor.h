@@ -4,6 +4,7 @@
 
 #include "timelinecontrolfactory.h"
 #include "smoothfollowparameter.h"
+#include "declicker.h"
 
 using namespace Steinberg;
 using namespace Vst;
@@ -55,6 +56,7 @@ namespace TTK
 
         // TODO: RTTransferT<double> rtt;
         SmoothFollowParameter playhead;
+        DeClicker deClicker;
 
         void beginParameterChanges(ProcessData& data);
         void endParameterChanges();
@@ -62,4 +64,6 @@ namespace TTK
     };
 
     static const size_t MIN_WINDOW_SIZE = 32768;
+    static const double ACCELERATION_THRESHOLD = 5.0e-11;
+    static const double DE_CLICKER_STEP = 1.0 / 512.0;
 }

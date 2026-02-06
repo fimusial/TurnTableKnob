@@ -8,8 +8,17 @@ namespace TTK
         value(value),
         stiffness(stiffness),
         damping(damping),
-        velocity(0.0)
+        velocity(0.0),
+        acceleration(0.0)
     {
+    }
+
+    void SmoothFollowParameter::reset(double newValue)
+    {
+        parameter.setValue(newValue);
+        value = newValue;
+        velocity = 0.0;
+        acceleration = 0.0;
     }
 
     void SmoothFollowParameter::beginChanges(IParamValueQueue* queue)
@@ -37,22 +46,20 @@ namespace TTK
         return value;
     }
 
+    double SmoothFollowParameter::getAcceleration()
+    {
+        return acceleration;
+    }
+
     double SmoothFollowParameter::advance()
     {
         double diff = parameter.getValue() - value;
-        double acceleration = stiffness * diff - damping * velocity;
+        acceleration = stiffness * diff - damping * velocity;
 
         velocity += acceleration;
         value += velocity;
 
         parameter.advance(1);
         return value;
-    }
-
-    void SmoothFollowParameter::reset(double newValue)
-    {
-        parameter.setValue(newValue);
-        value = newValue;
-        velocity = 0.0;
     }
 }
