@@ -270,11 +270,11 @@ namespace TTK
 
                 if (std::abs(playhead.getAcceleration()) < ACCELERATION_THRESHOLD)
                 {
-                    deClicker.down();
+                    deClicker.close();
                 }
                 else
                 {
-                    deClicker.up();
+                    deClicker.open();
                 }
 
                 outSample *= deClicker.getGain();

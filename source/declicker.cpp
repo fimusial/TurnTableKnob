@@ -10,12 +10,12 @@ namespace TTK
     {
     }
 
-    void DeClicker::up()
+    void DeClicker::open()
     {
         gain = std::max(0.0, std::min(1.0, gain + step));
     }
 
-    void DeClicker::down()
+    void DeClicker::close()
     {
         gain = std::max(0.0, std::min(1.0, gain - step));
     }

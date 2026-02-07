@@ -6,8 +6,8 @@ namespace TTK
     {
     public:
         DeClicker(double step);
-        void up();
-        void down();
+        void open();
+        void close();
         double getGain();
 
     private:
