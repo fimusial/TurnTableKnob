@@ -64,6 +64,7 @@ namespace TTK
     };
 
     static const size_t MIN_WINDOW_SIZE = 32768;
+    static const size_t MAX_WINDOW_SIZE = 131072;
     static const double ACCELERATION_THRESHOLD = 5.0e-12;
     static const double DE_CLICKER_STEP = 1.0 / 512.0;
 }

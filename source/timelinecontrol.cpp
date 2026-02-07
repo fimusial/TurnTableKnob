@@ -1,6 +1,7 @@
 #include "timelinecontrol.h"
 
 #include "cids.h"
+#include "cdrawcontextextensions.h"
 
 namespace TTK
 {
@@ -34,19 +35,18 @@ namespace TTK
         context->drawRect(viewSize, kDrawFilled);
 
         // waveform
-        context->setFrameColor(WaveformColor);
+        if (waveform.size() > 1)
+        {
+            double start = (double)processor.getWindowStart() / SAMPLE_WAVEFORM_RATIO;
+            double end = (double)processor.getWindowEnd() / SAMPLE_WAVEFORM_RATIO;
 
-        // TODO: high windowStart causes lag in audio
-        //if (waveform.size() > 1)
-        //{
-        //    double start = (double)processor.getWindowStart() / SAMPLE_WAVEFORM_RATIO;
-        //    double end = (double)processor.getWindowEnd() / SAMPLE_WAVEFORM_RATIO;
-        //    CDrawContext::Transform _(*context, CGraphicsTransform()
-        //        .translate(-start, 0.0)
-        //        .scale(viewSize.getWidth() / (end - start), 1.0));
+            CDrawContext::Transform _(*context, CGraphicsTransform()
+                .translate(-start, 0.0)
+                .scale(viewSize.getWidth() / (end - start), 1.0));
 
-        //    context->drawPolygon(waveform, kDrawStroked);
-        //}
+            context->setFrameColor(WaveformColor);
+            drawPolygon(context, waveform, (size_t)start, (size_t)end);
+        }
 
         // playhead bar
         double playhead = processor.getPlayheadValue();

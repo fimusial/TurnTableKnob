@@ -190,6 +190,11 @@ namespace TTK
             by = int(windowStart + MIN_WINDOW_SIZE - windowEnd);
         }
 
+        if (by > 0 && windowEnd - windowStart + by > MAX_WINDOW_SIZE)
+        {
+            by = int(windowStart + MAX_WINDOW_SIZE - windowEnd);
+        }
+
         if (by > 0 && windowEnd + by > segment->sampleCount - 2)
         {
             by = int(segment->sampleCount - windowEnd) - 2;

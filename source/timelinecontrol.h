@@ -39,7 +39,7 @@ namespace TTK
     };
 
     static const char* DEFAULT_FILE_PATH = "select a .wav file...";
-    static const double SAMPLE_WAVEFORM_RATIO = 32.0;
+    static const double SAMPLE_WAVEFORM_RATIO = 128.0;
     static const int SCROLL_SPEED = 8192;
     static const int ZOOM_SPEED = 8192;
     static const int TIMER_DELAY_MS = 16;
