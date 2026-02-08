@@ -31,8 +31,10 @@ namespace TTK
         CRect viewSize = getViewSize();
 
         // background
+        context->setLineWidth(1.0);
+        context->setFrameColor(BorderColor);
         context->setFillColor(BackgroundColor);
-        context->drawRect(viewSize, kDrawFilled);
+        context->drawRect(viewSize, kDrawFilledAndStroked);
 
         // waveform
         if (waveform.size() > 1)
@@ -44,7 +46,8 @@ namespace TTK
                 .translate(-start, 0.0)
                 .scale(viewSize.getWidth() / (end - start), 1.0));
 
-            context->setFrameColor(WaveformColor);
+            context->setLineWidth(2.0);
+            context->setFrameColor(PrimaryColor);
             drawPolygon(context, waveform, (size_t)start, (size_t)end);
         }
 
@@ -54,19 +57,19 @@ namespace TTK
         {
             playhead *= viewSize.getWidth();
             CRect playheadBar(playhead - 1.0, 0.0, playhead + 1.0, viewSize.getHeight());
-            context->setFillColor(PlayheadColor);
+            context->setFillColor(SecondaryColor);
             context->drawRect(playheadBar, kDrawFilled);
         }
 
         // text box
         CRect stringBox = textBox;
-        stringBox.inset(4, 4);
-        stringBox.offset(0, -1);
+        stringBox.inset(4.0, 4.0);
+        stringBox.offset(0.0, -1.0);
         context->setFontColor(TextColor);
         context->setFont(kSystemFont, stringBox.getHeight());
         context->drawString(filePath, stringBox, kRightText);
-        context->setLineWidth(1);
-        context->setFrameColor(TextBoxColor);
+        context->setLineWidth(1.0);
+        context->setFrameColor(BorderColor);
         context->drawRect(textBox, kDrawStroked);
 
         setDirty(false);
