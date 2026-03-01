@@ -1,6 +1,7 @@
 #include "timelinecontrol.h"
 
 #include "../cids.h"
+#include "../consts.h"
 #include "cdrawcontextextensions.h"
 
 namespace TTK

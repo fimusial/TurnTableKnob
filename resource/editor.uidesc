@@ -63,6 +63,17 @@
                             "wants-focus": "false",
                             "wheel-inc-value": "0.1"
                         }
+                    },
+                    "AutoPlayControl": {
+                        "attributes": {
+                            "class": "AutoPlayControl",
+                            "opacity": "1",
+                            "origin": "0, 200",
+                            "size": "400, 100",
+                            "transparent": "false",
+                            "wants-focus": "false",
+                            "wheel-inc-value": "0.1"
+                        }
                     }
                 }
             }

@@ -2,6 +2,7 @@
 
 #include "base/source/fstreamer.h"
 #include "cids.h"
+#include "consts.h"
 
 namespace TTK
 {
