@@ -3,8 +3,11 @@
 !README.md
 !resource/
 !source/
+!source/audiofile/
+!source/processing/
+!source/uicontrols/
 !*.h
 !*.cpp
 !*.uidesc
 
-source/dr_wav.h
+source/audiofile/dr_wav.h

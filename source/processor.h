@@ -2,9 +2,9 @@
 
 #include "public.sdk/source/vst/vstaudioeffect.h"
 
-#include "timelinecontrolfactory.h"
-#include "smoothfollowparameter.h"
-#include "declicker.h"
+#include "uicontrols/timelinecontrolfactory.h"
+#include "processing/smoothfollowparameter.h"
+#include "processing/declicker.h"
 
 using namespace Steinberg;
 using namespace Vst;

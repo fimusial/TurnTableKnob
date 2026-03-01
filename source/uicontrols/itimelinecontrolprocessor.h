@@ -1,6 +1,6 @@
 #pragma once
 
-#include "audiosegment32.h"
+#include "../audiofile/audiosegment32.h"
 
 namespace TTK
 {
