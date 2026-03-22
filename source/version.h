@@ -10,5 +10,5 @@
 #define stringFileDescription "TurnTableKnob VST3"
 #endif
 #define stringCompanyName "Foobar"
-#define stringLegalCopyright "Copyright(c) 2025 Filip Musia\u0142"
+#define stringLegalCopyright "Copyright(c) 2026 Filip Musia\u0142"
 #define stringLegalTrademarks "VST is a trademark of Steinberg Media Technologies GmbH"
