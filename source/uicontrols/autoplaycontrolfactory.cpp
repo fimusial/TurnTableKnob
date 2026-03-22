@@ -40,8 +40,32 @@ namespace TTK
             return nullptr;
         }
 
+        CRect rept;
+        if (!attributes.getRectAttribute("rept", rept))
+        {
+            return nullptr;
+        }
+
+        CRect back;
+        if (!attributes.getRectAttribute("back", back))
+        {
+            return nullptr;
+        }
+
+        CRect stop;
+        if (!attributes.getRectAttribute("stop", stop))
+        {
+            return nullptr;
+        }
+
+        CRect play;
+        if (!attributes.getRectAttribute("play", play))
+        {
+            return nullptr;
+        }
+
         return new AutoPlayControl(
-            CRect(origin, size),
+            CRect(origin, size), rept, back, stop, play,
             description->getControlListener("TurnTableKnobController"));
     }
 }

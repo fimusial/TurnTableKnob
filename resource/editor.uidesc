@@ -55,24 +55,21 @@
                     "TimelineControl": {
                         "attributes": {
                             "class": "TimelineControl",
-                            "opacity": "1",
                             "origin": "0, 0",
                             "size": "1200, 200",
-                            "textbox-size": "200, 20",
-                            "transparent": "false",
-                            "wants-focus": "false",
-                            "wheel-inc-value": "0.1"
+                            "filePathBox": "0, 0, 200, 20",
+                            "holdIndicatorBox": "0, 180, 60, 200"
                         }
                     },
                     "AutoPlayControl": {
                         "attributes": {
                             "class": "AutoPlayControl",
-                            "opacity": "1",
                             "origin": "0, 200",
                             "size": "400, 100",
-                            "transparent": "false",
-                            "wants-focus": "false",
-                            "wheel-inc-value": "0.1"
+                            "rept": "10, 210, 90, 290",
+                            "back": "110, 210, 190, 290",
+                            "stop": "210, 210, 290, 290",
+                            "play": "310, 210, 390, 290"
                         }
                     }
                 }

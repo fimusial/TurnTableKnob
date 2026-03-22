@@ -41,16 +41,20 @@ namespace TTK
             return nullptr;
         }
 
-        CPoint textBoxSize;
-        if (!attributes.getPointAttribute("textbox-size", textBoxSize))
+        CRect filePathBox;
+        if (!attributes.getRectAttribute("filePathBox", filePathBox))
+        {
+            return nullptr;
+        }
+
+        CRect holdIndicatorBox;
+        if (!attributes.getRectAttribute("holdIndicatorBox", holdIndicatorBox))
         {
             return nullptr;
         }
 
         return new TimelineControl(
-            CRect(origin, size),
-            CRect(origin, textBoxSize),
-            description->getControlListener("TurnTableKnobController"),
-            processor);
+            CRect(origin, size), filePathBox, holdIndicatorBox,
+            description->getControlListener("TurnTableKnobController"), processor);
     }
 }

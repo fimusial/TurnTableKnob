@@ -12,8 +12,13 @@ namespace TTK
     class TimelineControl : public CControl
     {
     public:
-        TimelineControl(const CRect& size, CRect textBox,
-            IControlListener* listener, ITimelineControlProcessor& processor);
+        TimelineControl(
+            const CRect& viewSize,
+            const CRect& filePathBox,
+            const CRect& holdIndicatorBox,
+            IControlListener* listener,
+            ITimelineControlProcessor& processor);
+
         ~TimelineControl();
         void draw(CDrawContext* context) override;
         void onMouseDownEvent(MouseDownEvent& event) override;
@@ -23,12 +28,14 @@ namespace TTK
         CBaseObject* newCopy() const override { return new TimelineControl(*this); }
 
     private:
+        CRect filePathBox;
+        CRect holdIndicatorBox;
+
         HoldControl* holdControl;
-        SharedPointer<CVSTGUITimer> timer;
-        CRect textBox;
         ITimelineControlProcessor& processor;
         UTF8String filePath;
         std::vector<CPoint> waveform;
+        SharedPointer<CVSTGUITimer> timer;
 
         void selectWaveform();
         void readWaveform();

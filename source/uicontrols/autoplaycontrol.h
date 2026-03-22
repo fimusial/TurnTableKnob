@@ -9,23 +9,29 @@ namespace TTK
     class AutoPlayControl : public CControl
     {
     public:
-        AutoPlayControl(const CRect& size, IControlListener* listener);
+        AutoPlayControl(
+            const CRect& viewSize,
+            const CRect& rept,
+            const CRect& back,
+            const CRect& stop,
+            const CRect& play,
+            IControlListener* listener);
+
         ~AutoPlayControl();
         void draw(CDrawContext* context) override;
         void onMouseDownEvent(MouseDownEvent& event) override;
         CBaseObject* newCopy() const override { return new AutoPlayControl(*this); }
 
     private:
+        CRect rept;
+        CRect back;
+        CRect stop;
+        CRect play;
+
         SharedPointer<CBitmap> reptBitmap;
         SharedPointer<CBitmap> backBitmap;
         SharedPointer<CBitmap> stopBitmap;
         SharedPointer<CBitmap> playBitmap;
-
-        // TODO: move to uidesc json
-        CRect reptRect = CRect(10, 210, 90, 290);
-        CRect backRect = CRect(110, 210, 190, 290);
-        CRect stopRect = CRect(210, 210, 290, 290);
-        CRect playRect = CRect(310, 210, 390, 290);
 
         bool reptPressed();
         bool backPressed();

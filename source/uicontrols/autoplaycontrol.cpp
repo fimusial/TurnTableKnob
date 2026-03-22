@@ -5,8 +5,18 @@
 
 namespace TTK
 {
-    AutoPlayControl::AutoPlayControl(const CRect& size, IControlListener* listener)
-        : CControl(size, listener, AutoPlay)
+    AutoPlayControl::AutoPlayControl(
+        const CRect& viewSize,
+        const CRect& rept,
+        const CRect& back,
+        const CRect& stop,
+        const CRect& play,
+        IControlListener* listener)
+        : CControl(viewSize, listener, AutoPlay),
+        rept(rept),
+        back(back),
+        stop(stop),
+        play(play)
     {
         // TODO: real bitmaps, move to consts together with uidesc
         reptBitmap = VSTGUI::owned(new CBitmap("rept-button.bmp"));
@@ -25,15 +35,15 @@ namespace TTK
 
         context->setFillColor(ShadowColor);
 
-        if (!reptPressed()) context->drawRect(CRect(reptRect).offset(5, 5), kDrawFilled);
-        if (!backPressed()) context->drawRect(CRect(backRect).offset(5, 5), kDrawFilled);
-        if (!stopPressed()) context->drawRect(CRect(stopRect).offset(5, 5), kDrawFilled);
-        if (!playPressed()) context->drawRect(CRect(playRect).offset(5, 5), kDrawFilled);
+        if (!reptPressed()) context->drawRect(CRect(rept).offset(5, 5), kDrawFilled);
+        if (!backPressed()) context->drawRect(CRect(back).offset(5, 5), kDrawFilled);
+        if (!stopPressed()) context->drawRect(CRect(stop).offset(5, 5), kDrawFilled);
+        if (!playPressed()) context->drawRect(CRect(play).offset(5, 5), kDrawFilled);
 
-        context->drawBitmap(reptBitmap, reptPressed() ? CRect(reptRect).offset(5, 5) : reptRect);
-        context->drawBitmap(backBitmap, backPressed() ? CRect(backRect).offset(5, 5) : backRect);
-        context->drawBitmap(stopBitmap, stopPressed() ? CRect(stopRect).offset(5, 5) : stopRect);
-        context->drawBitmap(playBitmap, playPressed() ? CRect(playRect).offset(5, 5) : playRect);
+        context->drawBitmap(reptBitmap, reptPressed() ? CRect(rept).offset(5, 5) : rept);
+        context->drawBitmap(backBitmap, backPressed() ? CRect(back).offset(5, 5) : back);
+        context->drawBitmap(stopBitmap, stopPressed() ? CRect(stop).offset(5, 5) : stop);
+        context->drawBitmap(playBitmap, playPressed() ? CRect(play).offset(5, 5) : play);
 
         setDirty(false);
     }
@@ -47,7 +57,7 @@ namespace TTK
 
         beginEdit();
 
-        if (reptRect.pointInside(event.mousePosition))
+        if (rept.pointInside(event.mousePosition))
         {
             if (value == AP_STOP) setValue(AP_STOP_REPT);
             else if (value == AP_BACK) setValue(AP_BACK_REPT);
@@ -60,7 +70,7 @@ namespace TTK
             invalid();
         }
 
-        if (backRect.pointInside(event.mousePosition))
+        if (back.pointInside(event.mousePosition))
         {
             setValue(reptPressed() ? AP_BACK_REPT : AP_BACK);
 
@@ -68,7 +78,7 @@ namespace TTK
             invalid();
         }
 
-        if (stopRect.pointInside(event.mousePosition))
+        if (stop.pointInside(event.mousePosition))
         {
             setValue(reptPressed() ? AP_STOP_REPT : AP_STOP);
 
@@ -76,7 +86,7 @@ namespace TTK
             invalid();
         }
 
-        if (playRect.pointInside(event.mousePosition))
+        if (play.pointInside(event.mousePosition))
         {
             setValue(reptPressed() ? AP_PLAY_REPT : AP_PLAY);
 

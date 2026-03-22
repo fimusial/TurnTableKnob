@@ -6,16 +6,21 @@
 
 namespace TTK
 {
-    TimelineControl::TimelineControl(const CRect& size, CRect textBox,
-        IControlListener* listener, ITimelineControlProcessor& processor)
-        : CControl(size, listener, Playhead),
-        textBox(textBox),
+    TimelineControl::TimelineControl(
+        const CRect& viewSize,
+        const CRect& filePathBox,
+        const CRect& holdIndicatorBox,
+        IControlListener* listener,
+        ITimelineControlProcessor& processor)
+        : CControl(viewSize, listener, Playhead),
+        filePathBox(filePathBox),
+        holdIndicatorBox(holdIndicatorBox),
         processor(processor),
         filePath(DEFAULT_FILE_PATH),
         waveform(0)
     {
         // TODO: independent control
-        holdControl = new HoldControl(size, listener);
+        holdControl = new HoldControl(viewSize, listener);
         listener->controlTagDidChange(holdControl);
 
         readWaveform();
@@ -69,27 +74,25 @@ namespace TTK
         }
 
         // file path box
-        // TODO: rename textBox to filePathBox
-        CRect filePathStringBox = textBox;
-        filePathStringBox.inset(4.0, 4.0);
-        filePathStringBox.offset(0.0, -1.0);
+        CRect filePathStringBox = filePathBox;
+        filePathStringBox.inset(4, 4);
+        filePathStringBox.offset(0, -1);
         context->setFontColor(TextColor);
         context->setFont(kSystemFont, filePathStringBox.getHeight());
         context->drawString(filePath, filePathStringBox, kRightText);
         context->setLineWidth(1.0);
         context->setFrameColor(BorderColor);
-        context->drawRect(textBox, kDrawStroked);
+        context->drawRect(filePathBox, kDrawStroked);
 
         // hold indicator
         if (holdControl->isEditing())
         {
-            // TODO: move to uidesc; independent control
-            CRect holdIndicatorBox(0.0, 180.0, 60.0, 200.0);
-            CRect holdIndicatorEllipseBox(0.0, 180.0, 20.0, 200.0);
-            holdIndicatorEllipseBox.inset(4.0, 4.0);
+            CRect holdIndicatorEllipseBox = holdIndicatorBox;
+            holdIndicatorEllipseBox.setWidth(holdIndicatorEllipseBox.getHeight());
+            holdIndicatorEllipseBox.inset(4, 4);
             CRect holdIndicatorStringBox = holdIndicatorBox;
-            holdIndicatorStringBox.inset(4.0, 4.0);
-            holdIndicatorStringBox.offset(0.0, -1.0);
+            holdIndicatorStringBox.inset(4, 4);
+            holdIndicatorStringBox.offset(0, -1);
             context->setFontColor(TextColor);
             context->setFont(kSystemFont, holdIndicatorStringBox.getHeight());
             context->drawString("HOLD", holdIndicatorStringBox, kRightText);
@@ -112,7 +115,7 @@ namespace TTK
 
         event.consumed = true;
 
-        if (textBox.pointInside(event.mousePosition))
+        if (filePathBox.pointInside(event.mousePosition))
         {
             selectWaveform();
             return;

@@ -220,7 +220,7 @@ namespace TTK
         for (int i = 0; i < count; i++)
         {
             IParamValueQueue* queue = data.inputParameterChanges->getParameterData(i);
-            if (!queue)
+            if (!queue) // TODO: or if there are no points?
             {
                 continue;
             }
@@ -351,11 +351,10 @@ namespace TTK
     void TurnTableKnobProcessor::outputPlayhead(ProcessData& data)
     {
         int channelCount = std::min(data.outputs->numChannels, (int)segment->channels.size());
+        double windowWidth = double(windowEnd - windowStart);
 
         for (int i = 0; i < data.numSamples; i++)
         {
-            double windowPlayhead = playhead.getValue() * double(windowEnd - windowStart);
-
             if (std::abs(playhead.getAcceleration()) < ACCELERATION_THRESHOLD)
             {
                 deClicker.close();
@@ -364,6 +363,8 @@ namespace TTK
             {
                 deClicker.open();
             }
+
+            double windowPlayhead = playhead.getValue() * windowWidth;
 
             for (int c = 0; c < channelCount; c++)
             {
