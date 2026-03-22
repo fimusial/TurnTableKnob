@@ -13,6 +13,9 @@ namespace TTK
         windowStart(0),
         windowEnd(MIN_WINDOW_SIZE),
         playhead(Playhead),
+        hold(false),
+        autoPlay(AP_STOP),
+        sampleIndex(0),
         deClicker(DE_CLICKER_STEP)
     {
         setControllerClass(kTurnTableKnobControllerUID);
@@ -111,6 +114,7 @@ namespace TTK
         filePath = newFilePath;
         windowStart = 0;
         windowEnd = MIN_WINDOW_SIZE;
+        sampleIndex = 0;
         playhead.reset();
         segment = newSegment;
 
@@ -225,6 +229,22 @@ namespace TTK
             {
                playhead.beginChanges(queue);
             }
+
+            if (queue->getParameterId() == Hold)
+            {
+                int _;
+                ParamValue value;
+                queue->getPoint(queue->getPointCount() - 1, _, value);
+                hold = value > 0;
+            }
+
+            if (queue->getParameterId() == AutoPlay)
+            {
+                int _;
+                ParamValue value;
+                queue->getPoint(queue->getPointCount() - 1, _, value);
+                autoPlay = value;
+            }
         }
     }
 
@@ -240,33 +260,110 @@ namespace TTK
             return;
         }
 
-        bool is32 = processSetup.symbolicSampleSize == kSample32;
-        bool is64 = processSetup.symbolicSampleSize == kSample64;
-
         if (!segment)
         {
-            for (int c = 0; c < data.outputs->numChannels; c++)
-            {
-                for (int i = 0; i < data.numSamples && is32; i++)
-                {
-                    data.outputs[0].channelBuffers32[c][i] = 0.0f;
-                }
-
-                for (int i = 0; i < data.numSamples && is64; i++)
-                {
-                    data.outputs[0].channelBuffers64[c][i] = 0.0;
-                }
-            }
-
-            data.outputs[0].silenceFlags = ((uint64)1 << data.outputs->numChannels) - 1;
+            outputSilence(data);
             return;
         }
 
+        // TODO: bug; hold gets stuck at true sometimes...
+        if (!hold)
+        {
+            outputAutoPlay(data);
+            return;
+        }
+
+        outputPlayhead(data);
+    }
+
+    void TurnTableKnobProcessor::outputSilence(ProcessData& data)
+    {
+        for (int c = 0; c < data.outputs->numChannels; c++)
+        {
+            for (int i = 0; i < data.numSamples && processSetup.symbolicSampleSize == kSample32; i++)
+            {
+                data.outputs[0].channelBuffers32[c][i] = 0.0f;
+            }
+
+            for (int i = 0; i < data.numSamples && processSetup.symbolicSampleSize == kSample64; i++)
+            {
+                data.outputs[0].channelBuffers64[c][i] = 0.0;
+            }
+        }
+
+        data.outputs[0].silenceFlags = ((uint64)1 << data.outputs->numChannels) - 1;
+    }
+
+    void TurnTableKnobProcessor::outputAutoPlay(ProcessData& data)
+    {
+        int channelCount = std::min(data.outputs->numChannels, (int)segment->channels.size());
+        double windowWidth = double(windowEnd - windowStart);
+
+        for (int i = 0; i < data.numSamples; i++)
+        {
+            if (autoPlay == AP_STOP || autoPlay == AP_STOP_REPT
+                || (autoPlay == AP_PLAY || autoPlay == AP_BACK) && (sampleIndex <= 0 || windowWidth <= sampleIndex))
+            {
+                deClicker.close();
+            }
+            else
+            {
+                deClicker.open();
+            }
+
+            for (int c = 0; c < channelCount; c++)
+            {
+                double outSample = deClicker.getGain() * segment->channels[c][windowStart + sampleIndex];
+
+                if (processSetup.symbolicSampleSize == kSample32)
+                {
+                    data.outputs[0].channelBuffers32[c][i] = outSample;
+                }
+
+                if (processSetup.symbolicSampleSize == kSample64)
+                {
+                    data.outputs[0].channelBuffers64[c][i] = outSample;
+                }
+            }
+
+            if (autoPlay == AP_PLAY)
+            {
+                sampleIndex = sampleIndex < windowWidth ? sampleIndex + 1 : windowWidth;
+            }
+            else if (autoPlay == AP_PLAY_REPT)
+            {
+                sampleIndex = sampleIndex < windowWidth ? sampleIndex + 1 : 0;
+            }
+            else if (autoPlay == AP_BACK)
+            {
+                sampleIndex = sampleIndex > 0 ? sampleIndex - 1 : 0;
+            }
+            else if (autoPlay == AP_BACK_REPT)
+            {
+                sampleIndex = sampleIndex > 0 ? sampleIndex - 1 : windowWidth;
+            }
+        }
+
+        playhead.reset((double)sampleIndex / windowWidth);
+        data.outputs[0].silenceFlags = 0;
+    }
+
+    void TurnTableKnobProcessor::outputPlayhead(ProcessData& data)
+    {
         int channelCount = std::min(data.outputs->numChannels, (int)segment->channels.size());
 
         for (int i = 0; i < data.numSamples; i++)
         {
             double windowPlayhead = playhead.getValue() * double(windowEnd - windowStart);
+
+            if (std::abs(playhead.getAcceleration()) < ACCELERATION_THRESHOLD)
+            {
+                deClicker.close();
+            }
+            else
+            {
+                deClicker.open();
+            }
 
             for (int c = 0; c < channelCount; c++)
             {
@@ -274,23 +371,14 @@ namespace TTK
                 double inSampleB = segment->channels[c][windowStart + (size_t)windowPlayhead + 1];
                 double outSample = (windowPlayhead - floor(windowPlayhead)) * (inSampleB - inSampleA) + inSampleA;
 
-                if (std::abs(playhead.getAcceleration()) < ACCELERATION_THRESHOLD)
-                {
-                    deClicker.close();
-                }
-                else
-                {
-                    deClicker.open();
-                }
-
                 outSample *= deClicker.getGain();
 
-                if (is32)
+                if (processSetup.symbolicSampleSize == kSample32)
                 {
                     data.outputs[0].channelBuffers32[c][i] = outSample;
                 }
 
-                if (is64)
+                if (processSetup.symbolicSampleSize == kSample64)
                 {
                     data.outputs[0].channelBuffers64[c][i] = outSample;
                 }
@@ -299,6 +387,7 @@ namespace TTK
             playhead.advance();
         }
 
+        sampleIndex = size_t(playhead.getValue() * double(windowEnd - windowStart));
         data.outputs[0].silenceFlags = 0;
     }
 }

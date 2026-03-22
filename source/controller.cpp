@@ -14,7 +14,13 @@ namespace TTK
         }
 
         parameters.addParameter(
-            STR16("Playhead"), nullptr, 0, 0, ParameterInfo::kCanAutomate, Playhead);
+            STR16("Playhead"), nullptr, 0, 0.0, ParameterInfo::kCanAutomate, Playhead);
+
+        parameters.addParameter(
+            STR16("Hold"), nullptr, 1, 0.0, ParameterInfo::kCanAutomate, Hold);
+
+        parameters.addParameter(
+            STR16("AutoPlay"), nullptr, 0, 0.0, ParameterInfo::kCanAutomate, AutoPlay);
 
         // TODO: implement MIDI learn
         return result;

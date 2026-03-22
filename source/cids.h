@@ -16,6 +16,7 @@ namespace TTK
     enum ParameterIds : ParamID
     {
         Playhead = 256,
+        Hold,
         AutoPlay
     };
 }

@@ -33,6 +33,8 @@ smtg_add_vst3plugin(TurnTableKnob
     source/uicontrols/autoplaycontrolfactory.cpp
     source/uicontrols/autoplaycontrolfactory.h
     source/uicontrols/cdrawcontextextensions.h
+    source/uicontrols/holdcontrol.cpp
+    source/uicontrols/holdcontrol.h
     source/uicontrols/itimelinecontrolprocessor.h
     source/uicontrols/timelinecontrol.cpp
     source/uicontrols/timelinecontrol.h

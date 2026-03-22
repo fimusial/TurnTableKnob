@@ -56,10 +56,16 @@ namespace TTK
 
         // TODO: RTTransferT<double> rtt;
         SmoothFollowParameter playhead;
+        bool hold;
+        double autoPlay;
+        size_t sampleIndex;
         DeClicker deClicker;
 
         void beginParameterChanges(ProcessData& data);
         void endParameterChanges();
         void processSamples(ProcessData& data);
+        void outputSilence(ProcessData& data);
+        void outputAutoPlay(ProcessData& data);
+        void outputPlayhead(ProcessData& data);
     };
 }

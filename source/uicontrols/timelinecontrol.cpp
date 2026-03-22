@@ -14,6 +14,10 @@ namespace TTK
         filePath(DEFAULT_FILE_PATH),
         waveform(0)
     {
+        // TODO: independent control
+        holdControl = new HoldControl(size, listener);
+        listener->controlTagDidChange(holdControl);
+
         readWaveform();
         readFilePath();
 
@@ -25,6 +29,8 @@ namespace TTK
 
     TimelineControl::~TimelineControl()
     {
+        listener->controlTagWillChange(holdControl);
+        delete holdControl;
     }
 
     void TimelineControl::draw(CDrawContext* context)
@@ -62,16 +68,37 @@ namespace TTK
             context->drawRect(playheadBar, kDrawFilled);
         }
 
-        // text box
-        CRect stringBox = textBox;
-        stringBox.inset(4.0, 4.0);
-        stringBox.offset(0.0, -1.0);
+        // file path box
+        // TODO: rename textBox to filePathBox
+        CRect filePathStringBox = textBox;
+        filePathStringBox.inset(4.0, 4.0);
+        filePathStringBox.offset(0.0, -1.0);
         context->setFontColor(TextColor);
-        context->setFont(kSystemFont, stringBox.getHeight());
-        context->drawString(filePath, stringBox, kRightText);
+        context->setFont(kSystemFont, filePathStringBox.getHeight());
+        context->drawString(filePath, filePathStringBox, kRightText);
         context->setLineWidth(1.0);
         context->setFrameColor(BorderColor);
         context->drawRect(textBox, kDrawStroked);
+
+        // hold indicator
+        if (holdControl->isEditing())
+        {
+            // TODO: move to uidesc; independent control
+            CRect holdIndicatorBox(0.0, 180.0, 60.0, 200.0);
+            CRect holdIndicatorEllipseBox(0.0, 180.0, 20.0, 200.0);
+            holdIndicatorEllipseBox.inset(4.0, 4.0);
+            CRect holdIndicatorStringBox = holdIndicatorBox;
+            holdIndicatorStringBox.inset(4.0, 4.0);
+            holdIndicatorStringBox.offset(0.0, -1.0);
+            context->setFontColor(TextColor);
+            context->setFont(kSystemFont, holdIndicatorStringBox.getHeight());
+            context->drawString("HOLD", holdIndicatorStringBox, kRightText);
+            context->setFillColor(SecondaryColor);
+            context->drawEllipse(holdIndicatorEllipseBox, kDrawFilled);
+            context->setLineWidth(1.0);
+            context->setFrameColor(BorderColor);
+            context->drawRect(holdIndicatorBox, kDrawStroked);
+        }
 
         setDirty(false);
     }
@@ -85,19 +112,72 @@ namespace TTK
 
         event.consumed = true;
 
-        if (!textBox.pointInside(event.mousePosition))
+        if (textBox.pointInside(event.mousePosition))
         {
-            if (!isEditing())
-            {
-                beginEdit();
-                setValue(event.mousePosition.x / getViewSize().getWidth());
-                processor.resetPlayhead(getValue());
-                valueChanged();
-            }
-
+            selectWaveform();
             return;
         }
 
+        if (isEditing())
+        {
+            return;
+        }
+
+        beginEdit();
+        holdControl->begin();
+        setValue(event.mousePosition.x / getViewSize().getWidth());
+        processor.resetPlayhead(getValue());
+        valueChanged();
+    }
+
+    void TimelineControl::onMouseMoveEvent(MouseMoveEvent& event)
+    {
+        if (!isEditing())
+        {
+            return;
+        }
+
+        setValue(event.mousePosition.x / getViewSize().getWidth());
+        valueChanged();
+
+        event.consumed = true;
+    }
+
+    void TimelineControl::onMouseUpEvent(MouseUpEvent& event)
+    {
+        if (!event.buttonState.isLeft())
+        {
+            return;
+        }
+
+        if (isEditing())
+        {
+            holdControl->end();
+            endEdit();
+        }
+
+        event.consumed = true;
+    }
+
+    void TimelineControl::onMouseWheelEvent(MouseWheelEvent& event)
+    {
+        int direction = event.deltaY > 0.0 ? 1 : -1;
+
+        if (event.modifiers.has(ModifierKey::Control))
+        {
+            processor.zoomSegment(ZOOM_SPEED * direction);
+        }
+        else
+        {
+            processor.scrollSegment(SCROLL_SPEED * direction);
+        }
+
+        invalid();
+        event.consumed = true;
+    }
+
+    void TimelineControl::selectWaveform()
+    {
         CNewFileSelector* selector = CNewFileSelector::create(getFrame(), CNewFileSelector::kSelectFile);
         if (!selector)
         {
@@ -124,51 +204,6 @@ namespace TTK
         }
 
         selector->forget();
-    }
-
-    void TimelineControl::onMouseMoveEvent(MouseMoveEvent& event)
-    {
-        if (!isEditing())
-        {
-            return;
-        }
-
-        setValue(event.mousePosition.x / getViewSize().getWidth());
-        valueChanged();
-
-        event.consumed = true;
-    }
-
-    void TimelineControl::onMouseUpEvent(MouseUpEvent& event)
-    {
-        if (!event.buttonState.isLeft())
-        {
-            return;
-        }
-
-        if (isEditing())
-        {
-            endEdit();
-        }
-
-        event.consumed = true;
-    }
-
-    void TimelineControl::onMouseWheelEvent(MouseWheelEvent& event)
-    {
-        int direction = event.deltaY > 0.0 ? 1 : -1;
-
-        if (event.modifiers.has(ModifierKey::Control))
-        {
-            processor.zoomSegment(ZOOM_SPEED * direction);
-        }
-        else
-        {
-            processor.scrollSegment(SCROLL_SPEED * direction);
-        }
-
-        invalid();
-        event.consumed = true;
     }
 
     void TimelineControl::readWaveform()

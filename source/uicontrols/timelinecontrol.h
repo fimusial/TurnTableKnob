@@ -3,6 +3,7 @@
 #include "vstgui/vstgui.h"
 
 #include "itimelinecontrolprocessor.h"
+#include "holdcontrol.h"
 
 using namespace VSTGUI;
 
@@ -22,12 +23,14 @@ namespace TTK
         CBaseObject* newCopy() const override { return new TimelineControl(*this); }
 
     private:
+        HoldControl* holdControl;
         SharedPointer<CVSTGUITimer> timer;
         CRect textBox;
         ITimelineControlProcessor& processor;
         UTF8String filePath;
         std::vector<CPoint> waveform;
 
+        void selectWaveform();
         void readWaveform();
         void readFilePath();
     };
