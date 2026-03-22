@@ -9,7 +9,10 @@ namespace TTK
     class HoldControl : public CControl
     {
     public:
-        HoldControl(const CRect& size, IControlListener* listener);
+        HoldControl(
+            const CRect& viewSize,
+            IControlListener* listener);
+
         ~HoldControl();
         void draw(CDrawContext* context) override;
         void begin();

@@ -5,8 +5,10 @@
 
 namespace TTK
 {
-    HoldControl::HoldControl(const CRect& size, IControlListener* listener)
-        : CControl(size, listener, Hold)
+    HoldControl::HoldControl(
+        const CRect& viewSize,
+        IControlListener* listener)
+        : CControl(viewSize, listener, Hold)
     {
     }
 

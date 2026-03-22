@@ -19,7 +19,6 @@ namespace TTK
         filePath(DEFAULT_FILE_PATH),
         waveform(0)
     {
-        // TODO: independent control
         holdControl = new HoldControl(viewSize, listener);
         listener->controlTagDidChange(holdControl);
 
