@@ -220,7 +220,13 @@ namespace TTK
         for (int i = 0; i < count; i++)
         {
             IParamValueQueue* queue = data.inputParameterChanges->getParameterData(i);
-            if (!queue) // TODO: or if there are no points?
+            if (!queue)
+            {
+                continue;
+            }
+
+            int pointCount = queue->getPointCount();
+            if (pointCount < 1)
             {
                 continue;
             }
@@ -230,20 +236,19 @@ namespace TTK
                playhead.beginChanges(queue);
             }
 
+            int _;
+            ParamValue value;
+
             if (queue->getParameterId() == Hold)
             {
-                int _;
-                ParamValue value;
-                queue->getPoint(queue->getPointCount() - 1, _, value);
-                hold = value > 0;
+                queue->getPoint(pointCount - 1, _, value);
+                hold = value > 0.5;
             }
 
             if (queue->getParameterId() == AutoPlay)
             {
-                int _;
-                ParamValue value;
-                queue->getPoint(queue->getPointCount() - 1, _, value);
-                autoPlay = value;
+                queue->getPoint(pointCount - 1, _, value);
+                autoPlay = snapAutoPlayValue(value);
             }
         }
     }
@@ -266,7 +271,6 @@ namespace TTK
             return;
         }
 
-        // TODO: bug; hold gets stuck at true sometimes...
         if (!hold)
         {
             outputAutoPlay(data);
@@ -390,5 +394,44 @@ namespace TTK
 
         sampleIndex = size_t(playhead.getValue() * double(windowEnd - windowStart));
         data.outputs[0].silenceFlags = 0;
+    }
+
+    double TurnTableKnobProcessor::snapAutoPlayValue(double value)
+    {
+        // 0.0 - 0.125
+        if (AP_STOP <= value && value < AP_BACK)
+        {
+            return AP_STOP;
+        }
+
+        // 0.125 - 0.25
+        if (AP_BACK <= value && value < AP_PLAY)
+        {
+            return AP_BACK;
+        }
+
+        // 0.25 - 0.75
+        if (AP_PLAY <= value && value < AP_STOP_REPT)
+        {
+            return AP_PLAY;
+        }
+
+        // 0.75 - 0.875
+        if (AP_STOP_REPT <= value && value < AP_BACK_REPT)
+        {
+            return AP_STOP_REPT;
+        }
+
+        // 0.875 - 1.0
+        if (AP_BACK_REPT <= value && value < AP_PLAY_REPT)
+        {
+            return AP_BACK_REPT;
+        }
+
+        // 1.0
+        if (AP_PLAY_REPT <= value)
+        {
+            return AP_PLAY_REPT;
+        }
     }
 }

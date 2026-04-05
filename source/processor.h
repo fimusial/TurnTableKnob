@@ -59,13 +59,16 @@ namespace TTK
         bool hold;
         double autoPlay;
         size_t sampleIndex;
-        DeClicker deClicker;
+        DeClicker deClicker; // TODO: UI display
 
+        // TODO: show hold and autoplay in the ui based on processor values
         void beginParameterChanges(ProcessData& data);
         void endParameterChanges();
         void processSamples(ProcessData& data);
         void outputSilence(ProcessData& data);
         void outputAutoPlay(ProcessData& data);
         void outputPlayhead(ProcessData& data);
+
+        double snapAutoPlayValue(double value);
     };
 }
