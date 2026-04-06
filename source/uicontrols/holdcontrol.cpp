@@ -7,8 +7,10 @@ namespace TTK
 {
     HoldControl::HoldControl(
         const CRect& viewSize,
-        IControlListener* listener)
-        : CControl(viewSize, listener, Hold)
+        IControlListener* listener,
+        ITimelineControlProcessor& processor)
+        : CControl(viewSize, listener, Hold),
+        processor(processor)
     {
     }
 
@@ -43,5 +45,6 @@ namespace TTK
         setValue(0.0);
         valueChanged();
         endEdit();
+        processor.resetHold();
     }
 }

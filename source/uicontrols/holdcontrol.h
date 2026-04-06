@@ -2,6 +2,8 @@
 
 #include "vstgui/vstgui.h"
 
+#include "itimelinecontrolprocessor.h"
+
 using namespace VSTGUI;
 
 namespace TTK
@@ -11,12 +13,16 @@ namespace TTK
     public:
         HoldControl(
             const CRect& viewSize,
-            IControlListener* listener);
+            IControlListener* listener,
+            ITimelineControlProcessor& processor);
 
         ~HoldControl();
         void draw(CDrawContext* context) override;
         void begin();
         void end();
         CBaseObject* newCopy() const override { return new HoldControl(*this); }
+
+    private:
+        ITimelineControlProcessor& processor;
     };
 }

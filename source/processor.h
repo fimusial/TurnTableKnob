@@ -41,9 +41,11 @@ namespace TTK
         size_t getWindowStart() override;
         size_t getWindowEnd() override;
         double getPlayheadValue() override;
+        bool getHoldValue() override;
         void resetPlayhead(double newValue = 0.0) override;
         void scrollSegment(int samples) override;
         void zoomSegment(int samples) override;
+        void resetHold(bool newValue = false) override;
 
     private:
         TimelineControlFactory timelineControlFactory;

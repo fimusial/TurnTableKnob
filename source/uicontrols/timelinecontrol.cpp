@@ -19,7 +19,7 @@ namespace TTK
         filePath(DEFAULT_FILE_PATH),
         waveform(0)
     {
-        holdControl = new HoldControl(viewSize, listener);
+        holdControl = new HoldControl(viewSize, listener, processor);
         listener->controlTagDidChange(holdControl);
 
         readWaveform();
@@ -84,7 +84,7 @@ namespace TTK
         context->drawRect(filePathBox, kDrawStroked);
 
         // hold indicator
-        if (holdControl->isEditing())
+        if (processor.getHoldValue())
         {
             CRect holdIndicatorEllipseBox = holdIndicatorBox;
             holdIndicatorEllipseBox.setWidth(holdIndicatorEllipseBox.getHeight());

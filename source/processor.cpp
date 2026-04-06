@@ -151,6 +151,11 @@ namespace TTK
         return playhead.getValue();
     }
 
+    bool TurnTableKnobProcessor::getHoldValue()
+    {
+        return hold;
+    }
+
     void TurnTableKnobProcessor::resetPlayhead(double newValue)
     {
         if (!segment)
@@ -207,6 +212,11 @@ namespace TTK
 
         playhead.reset(playhead.getValue());
         windowEnd += by;
+    }
+
+    void TurnTableKnobProcessor::resetHold(bool newValue)
+    {
+        hold = newValue;
     }
 
     void TurnTableKnobProcessor::beginParameterChanges(ProcessData& data)
