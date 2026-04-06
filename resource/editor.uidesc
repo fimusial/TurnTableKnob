@@ -58,7 +58,8 @@
                             "origin": "0, 0",
                             "size": "1200, 200",
                             "filePathBox": "0, 0, 200, 20",
-                            "holdIndicatorBox": "0, 180, 60, 200"
+                            "holdIndicatorBox": "0, 180, 60, 200",
+                            "deClickerBox": "1140, 180, 1200, 200"
                         }
                     },
                     "AutoPlayControl": {

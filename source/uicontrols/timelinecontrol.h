@@ -16,6 +16,7 @@ namespace TTK
             const CRect& viewSize,
             const CRect& filePathBox,
             const CRect& holdIndicatorBox,
+            const CRect& deClickerBox,
             IControlListener* listener,
             ITimelineControlProcessor& processor);
 
@@ -30,6 +31,7 @@ namespace TTK
     private:
         CRect filePathBox;
         CRect holdIndicatorBox;
+        CRect deClickerBox;
 
         HoldControl* holdControl;
         ITimelineControlProcessor& processor;

@@ -10,11 +10,13 @@ namespace TTK
         const CRect& viewSize,
         const CRect& filePathBox,
         const CRect& holdIndicatorBox,
+        const CRect& deClickerBox,
         IControlListener* listener,
         ITimelineControlProcessor& processor)
         : CControl(viewSize, listener, Playhead),
         filePathBox(filePathBox),
         holdIndicatorBox(holdIndicatorBox),
+        deClickerBox(deClickerBox),
         processor(processor),
         filePath(DEFAULT_FILE_PATH),
         waveform(0)
@@ -101,6 +103,22 @@ namespace TTK
             context->setFrameColor(BorderColor);
             context->drawRect(holdIndicatorBox, kDrawStroked);
         }
+
+        // de clicker
+        CRect deClickerStringBox = deClickerBox;
+        deClickerStringBox.inset(4, 4);
+        deClickerStringBox.offset(0, -1);
+        CRect deClickerBarBox = deClickerBox;
+        deClickerBarBox.inset(4, 4);
+        deClickerBarBox.right = deClickerBarBox.left + processor.getDeClickerValue() * deClickerBox.getWidth() * 0.5;
+        context->setFontColor(TextColor);
+        context->setFont(kSystemFont, deClickerStringBox.getHeight());
+        context->drawString("DC", deClickerStringBox, kRightText);
+        context->setLineWidth(1.0);
+        context->setFrameColor(BorderColor);
+        context->drawRect(deClickerBox, kDrawStroked);
+        context->setFillColor(BackgroundColor);
+        context->drawRect(deClickerBarBox, kDrawFilledAndStroked);
 
         setDirty(false);
     }

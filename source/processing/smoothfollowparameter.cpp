@@ -46,6 +46,11 @@ namespace TTK
         return value;
     }
 
+    double SmoothFollowParameter::getVelocity()
+    {
+        return velocity;
+    }
+
     double SmoothFollowParameter::getAcceleration()
     {
         return acceleration;

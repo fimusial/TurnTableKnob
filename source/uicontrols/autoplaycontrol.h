@@ -33,9 +33,11 @@ namespace TTK
         SharedPointer<CBitmap> stopBitmap;
         SharedPointer<CBitmap> playBitmap;
 
-        bool reptPressed();
-        bool backPressed();
-        bool stopPressed();
-        bool playPressed();
+        bool reptPressed(double value);
+        bool backPressed(double value);
+        bool stopPressed(double value);
+        bool playPressed(double value);
     };
+
+    double snapAutoPlayValue(double value);
 }

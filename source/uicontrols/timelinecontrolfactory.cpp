@@ -53,8 +53,14 @@ namespace TTK
             return nullptr;
         }
 
+        CRect deClickerBox;
+        if (!attributes.getRectAttribute("deClickerBox", deClickerBox))
+        {
+            return nullptr;
+        }
+
         return new TimelineControl(
-            CRect(origin, size), filePathBox, holdIndicatorBox,
+            CRect(origin, size), filePathBox, holdIndicatorBox, deClickerBox,
             description->getControlListener("TurnTableKnobController"), processor);
     }
 }

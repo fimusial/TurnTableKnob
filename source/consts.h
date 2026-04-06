@@ -13,13 +13,14 @@ namespace TTK
 
     static const char* DEFAULT_FILE_PATH = "select a .wav file...";
     static const double SAMPLE_WAVEFORM_RATIO = 128.0;
+    static const size_t MIN_WINDOW_SIZE = 32768;
+    static const size_t MAX_WINDOW_SIZE = 131072;
     static const int SCROLL_SPEED = 4096;
     static const int ZOOM_SPEED = 4096;
     static const int TIMER_DELAY_MS = 16;
 
-    static const size_t MIN_WINDOW_SIZE = 32768;
-    static const size_t MAX_WINDOW_SIZE = 131072;
-    static const double ACCELERATION_THRESHOLD = 5.0e-12;
+    static const double DE_CLICKER_VEL_THRESHOLD = 5.0e-12;
+    static const double DE_CLICKER_ACC_THRESHOLD = 5.0e-12;
     static const double DE_CLICKER_STEP = 1.0 / 256.0;
 
     static const double AP_STOP = 0.0;

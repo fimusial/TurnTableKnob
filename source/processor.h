@@ -41,6 +41,7 @@ namespace TTK
         size_t getWindowStart() override;
         size_t getWindowEnd() override;
         double getPlayheadValue() override;
+        double getDeClickerValue() override;
         bool getHoldValue() override;
         void resetPlayhead(double newValue = 0.0) override;
         void scrollSegment(int samples) override;
@@ -56,21 +57,17 @@ namespace TTK
         size_t windowStart;
         size_t windowEnd;
 
-        // TODO: RTTransferT<double> rtt;
         SmoothFollowParameter playhead;
         bool hold;
         double autoPlay;
         size_t sampleIndex;
-        DeClicker deClicker; // TODO: UI display
+        DeClicker deClicker;
 
-        // TODO: show hold and autoplay in the ui based on processor values
         void beginParameterChanges(ProcessData& data);
         void endParameterChanges();
         void processSamples(ProcessData& data);
         void outputSilence(ProcessData& data);
         void outputAutoPlay(ProcessData& data);
         void outputPlayhead(ProcessData& data);
-
-        double snapAutoPlayValue(double value);
     };
 }

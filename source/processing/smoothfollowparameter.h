@@ -16,6 +16,7 @@ namespace TTK
         void beginChanges(IParamValueQueue* queue);
         void endChanges();
         double getValue();
+        double getVelocity();
         double getAcceleration();
         double advance();
 

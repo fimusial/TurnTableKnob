@@ -13,6 +13,7 @@ namespace TTK
         virtual size_t getWindowStart() = 0;
         virtual size_t getWindowEnd() = 0;
         virtual double getPlayheadValue() = 0;
+        virtual double getDeClickerValue() = 0;
         virtual bool getHoldValue() = 0;
         virtual void resetPlayhead(double newValue = 0.0) = 0;
         virtual void scrollSegment(int samples) = 0;

@@ -32,18 +32,19 @@ namespace TTK
     void AutoPlayControl::draw(CDrawContext* context)
     {
         CRect viewSize = getViewSize();
+        double currentValue = snapAutoPlayValue(getValue());
 
         context->setFillColor(ShadowColor);
 
-        if (!reptPressed()) context->drawRect(CRect(rept).offset(5, 5), kDrawFilled);
-        if (!backPressed()) context->drawRect(CRect(back).offset(5, 5), kDrawFilled);
-        if (!stopPressed()) context->drawRect(CRect(stop).offset(5, 5), kDrawFilled);
-        if (!playPressed()) context->drawRect(CRect(play).offset(5, 5), kDrawFilled);
+        if (!reptPressed(currentValue)) context->drawRect(CRect(rept).offset(5, 5), kDrawFilled);
+        if (!backPressed(currentValue)) context->drawRect(CRect(back).offset(5, 5), kDrawFilled);
+        if (!stopPressed(currentValue)) context->drawRect(CRect(stop).offset(5, 5), kDrawFilled);
+        if (!playPressed(currentValue)) context->drawRect(CRect(play).offset(5, 5), kDrawFilled);
 
-        context->drawBitmap(reptBitmap, reptPressed() ? CRect(rept).offset(5, 5) : rept);
-        context->drawBitmap(backBitmap, backPressed() ? CRect(back).offset(5, 5) : back);
-        context->drawBitmap(stopBitmap, stopPressed() ? CRect(stop).offset(5, 5) : stop);
-        context->drawBitmap(playBitmap, playPressed() ? CRect(play).offset(5, 5) : play);
+        context->drawBitmap(reptBitmap, reptPressed(currentValue) ? CRect(rept).offset(5, 5) : rept);
+        context->drawBitmap(backBitmap, backPressed(currentValue) ? CRect(back).offset(5, 5) : back);
+        context->drawBitmap(stopBitmap, stopPressed(currentValue) ? CRect(stop).offset(5, 5) : stop);
+        context->drawBitmap(playBitmap, playPressed(currentValue) ? CRect(play).offset(5, 5) : play);
 
         setDirty(false);
     }
@@ -57,14 +58,16 @@ namespace TTK
 
         beginEdit();
 
+        double currentValue = snapAutoPlayValue(getValue());
+
         if (rept.pointInside(event.mousePosition))
         {
-            if (value == AP_STOP) setValue(AP_STOP_REPT);
-            else if (value == AP_BACK) setValue(AP_BACK_REPT);
-            else if (value == AP_PLAY) setValue(AP_PLAY_REPT);
-            else if (value == AP_STOP_REPT) setValue(AP_STOP);
-            else if (value == AP_BACK_REPT) setValue(AP_BACK);
-            else if (value == AP_PLAY_REPT) setValue(AP_PLAY);
+            if (currentValue == AP_STOP) setValue(AP_STOP_REPT);
+            else if (currentValue == AP_BACK) setValue(AP_BACK_REPT);
+            else if (currentValue == AP_PLAY) setValue(AP_PLAY_REPT);
+            else if (currentValue == AP_STOP_REPT) setValue(AP_STOP);
+            else if (currentValue == AP_BACK_REPT) setValue(AP_BACK);
+            else if (currentValue == AP_PLAY_REPT) setValue(AP_PLAY);
 
             valueChanged();
             invalid();
@@ -72,7 +75,7 @@ namespace TTK
 
         if (back.pointInside(event.mousePosition))
         {
-            setValue(reptPressed() ? AP_BACK_REPT : AP_BACK);
+            setValue(reptPressed(currentValue) ? AP_BACK_REPT : AP_BACK);
 
             valueChanged();
             invalid();
@@ -80,7 +83,7 @@ namespace TTK
 
         if (stop.pointInside(event.mousePosition))
         {
-            setValue(reptPressed() ? AP_STOP_REPT : AP_STOP);
+            setValue(reptPressed(currentValue) ? AP_STOP_REPT : AP_STOP);
 
             valueChanged();
             invalid();
@@ -88,7 +91,7 @@ namespace TTK
 
         if (play.pointInside(event.mousePosition))
         {
-            setValue(reptPressed() ? AP_PLAY_REPT : AP_PLAY);
+            setValue(reptPressed(currentValue) ? AP_PLAY_REPT : AP_PLAY);
 
             valueChanged();
             invalid();
@@ -99,23 +102,64 @@ namespace TTK
         event.consumed = true;
     }
 
-    bool AutoPlayControl::reptPressed()
+    bool AutoPlayControl::reptPressed(double value)
     {
         return value == AP_STOP_REPT || value == AP_BACK_REPT || value == AP_PLAY_REPT;
     }
 
-    bool AutoPlayControl::backPressed()
+    bool AutoPlayControl::backPressed(double value)
     {
         return value == AP_BACK || value == AP_BACK_REPT;
     }
 
-    bool AutoPlayControl::stopPressed()
+    bool AutoPlayControl::stopPressed(double value)
     {
         return value == AP_STOP || value == AP_STOP_REPT;
     }
 
-    bool AutoPlayControl::playPressed()
+    bool AutoPlayControl::playPressed(double value)
     {
         return value == AP_PLAY || value == AP_PLAY_REPT;
+    }
+
+    double snapAutoPlayValue(double value)
+    {
+        // 0.0 - 0.125
+        if (AP_STOP <= value && value < AP_BACK)
+        {
+            return AP_STOP;
+        }
+
+        // 0.125 - 0.25
+        if (AP_BACK <= value && value < AP_PLAY)
+        {
+            return AP_BACK;
+        }
+
+        // 0.25 - 0.75
+        if (AP_PLAY <= value && value < AP_STOP_REPT)
+        {
+            return AP_PLAY;
+        }
+
+        // 0.75 - 0.875
+        if (AP_STOP_REPT <= value && value < AP_BACK_REPT)
+        {
+            return AP_STOP_REPT;
+        }
+
+        // 0.875 - 1.0
+        if (AP_BACK_REPT <= value && value < AP_PLAY_REPT)
+        {
+            return AP_BACK_REPT;
+        }
+
+        // 1.0
+        if (AP_PLAY_REPT <= value)
+        {
+            return AP_PLAY_REPT;
+        }
+
+        return 0.0;
     }
 }

@@ -3,6 +3,7 @@
 #include "base/source/fstreamer.h"
 #include "cids.h"
 #include "consts.h"
+#include "uicontrols/autoplaycontrol.h"
 
 namespace TTK
 {
@@ -149,6 +150,11 @@ namespace TTK
     double TurnTableKnobProcessor::getPlayheadValue()
     {
         return playhead.getValue();
+    }
+
+    double TurnTableKnobProcessor::getDeClickerValue()
+    {
+        return deClicker.getGain();
     }
 
     bool TurnTableKnobProcessor::getHoldValue()
@@ -369,7 +375,8 @@ namespace TTK
 
         for (int i = 0; i < data.numSamples; i++)
         {
-            if (std::abs(playhead.getAcceleration()) < ACCELERATION_THRESHOLD)
+            if (std::abs(playhead.getVelocity()) < DE_CLICKER_VEL_THRESHOLD
+                && std::abs(playhead.getAcceleration()) < DE_CLICKER_ACC_THRESHOLD)
             {
                 deClicker.close();
             }
@@ -404,44 +411,5 @@ namespace TTK
 
         sampleIndex = size_t(playhead.getValue() * double(windowEnd - windowStart));
         data.outputs[0].silenceFlags = 0;
-    }
-
-    double TurnTableKnobProcessor::snapAutoPlayValue(double value)
-    {
-        // 0.0 - 0.125
-        if (AP_STOP <= value && value < AP_BACK)
-        {
-            return AP_STOP;
-        }
-
-        // 0.125 - 0.25
-        if (AP_BACK <= value && value < AP_PLAY)
-        {
-            return AP_BACK;
-        }
-
-        // 0.25 - 0.75
-        if (AP_PLAY <= value && value < AP_STOP_REPT)
-        {
-            return AP_PLAY;
-        }
-
-        // 0.75 - 0.875
-        if (AP_STOP_REPT <= value && value < AP_BACK_REPT)
-        {
-            return AP_STOP_REPT;
-        }
-
-        // 0.875 - 1.0
-        if (AP_BACK_REPT <= value && value < AP_PLAY_REPT)
-        {
-            return AP_BACK_REPT;
-        }
-
-        // 1.0
-        if (AP_PLAY_REPT <= value)
-        {
-            return AP_PLAY_REPT;
-        }
     }
 }
