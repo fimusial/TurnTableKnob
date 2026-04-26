@@ -72,6 +72,14 @@
                             "stop": "210, 210, 290, 290",
                             "play": "310, 210, 390, 290"
                         }
+                    },
+                    "XFaderControl": {
+                        "attributes": {
+                            "class": "XFaderControl",
+                            "origin": "800, 200",
+                            "size": "400, 100",
+                            "rangeBox": "810, 210, 1090, 290"
+                        }
                     }
                 }
             }

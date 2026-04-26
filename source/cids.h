@@ -17,6 +17,7 @@ namespace TTK
     {
         Playhead = 256,
         Hold,
-        AutoPlay
+        AutoPlay,
+        XFader
     };
 }
