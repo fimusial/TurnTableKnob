@@ -22,6 +22,9 @@ namespace TTK
         parameters.addParameter(
             STR16("AutoPlay"), nullptr, 0, 0.0, ParameterInfo::kCanAutomate, AutoPlay);
 
+        parameters.addParameter(
+            STR16("XFader"), nullptr, 0, 0.0, ParameterInfo::kCanAutomate, XFader);
+
         // TODO: implement MIDI learn
         return result;
     }

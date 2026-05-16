@@ -23,7 +23,10 @@ namespace TTK
 
     private:
         CRect rangeBox;
+        CRect insetRangeBox;
+        CPoint handleBitmapSize;
 
         SharedPointer<CBitmap> rangeBitmap;
+        SharedPointer<CBitmap> handleBitmap;
     };
 }
