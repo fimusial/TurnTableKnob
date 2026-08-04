@@ -58,6 +58,7 @@ namespace TTK
         size_t windowEnd;
 
         SmoothFollowParameter playhead;
+        SampleAccurate::Parameter xFader;
         bool hold;
         double autoPlay;
         size_t sampleIndex;

@@ -13,7 +13,8 @@ namespace TTK
         filePath(""),
         windowStart(0),
         windowEnd(MIN_WINDOW_SIZE),
-        playhead(Playhead),
+        playhead(Playhead, 0.0),
+        xFader(XFader, 1.0),
         hold(false),
         autoPlay(AP_STOP),
         sampleIndex(0),
@@ -247,24 +248,30 @@ namespace TTK
                 continue;
             }
 
-            if (queue->getParameterId() == Playhead)
-            {
-               playhead.beginChanges(queue);
-            }
-
             int _;
             ParamValue value;
-
-            if (queue->getParameterId() == Hold)
+            switch (queue->getParameterId())
             {
+            case Playhead:
+                playhead.beginChanges(queue);
+                break;
+
+            case XFader:
+                xFader.beginChanges(queue);
+                break;
+
+            case Hold:
                 queue->getPoint(pointCount - 1, _, value);
                 hold = value > 0.5;
-            }
+                break;
 
-            if (queue->getParameterId() == AutoPlay)
-            {
+            case AutoPlay:
                 queue->getPoint(pointCount - 1, _, value);
                 autoPlay = snapAutoPlayValue(value);
+                break;
+
+            default:
+                continue;
             }
         }
     }
@@ -272,6 +279,7 @@ namespace TTK
     void TurnTableKnobProcessor::endParameterChanges()
     {
         playhead.endChanges();
+        xFader.endChanges();
     }
 
     void TurnTableKnobProcessor::processSamples(ProcessData& data)
@@ -337,14 +345,16 @@ namespace TTK
 
                 if (processSetup.symbolicSampleSize == kSample32)
                 {
-                    data.outputs[0].channelBuffers32[c][i] = outSample;
+                    data.outputs[0].channelBuffers32[c][i] = outSample * xFader.getValue();
                 }
 
                 if (processSetup.symbolicSampleSize == kSample64)
                 {
-                    data.outputs[0].channelBuffers64[c][i] = outSample;
+                    data.outputs[0].channelBuffers64[c][i] = outSample * xFader.getValue();
                 }
             }
+
+            xFader.advance(1);
 
             if (autoPlay == AP_PLAY)
             {
@@ -397,16 +407,17 @@ namespace TTK
 
                 if (processSetup.symbolicSampleSize == kSample32)
                 {
-                    data.outputs[0].channelBuffers32[c][i] = outSample;
+                    data.outputs[0].channelBuffers32[c][i] = outSample * xFader.getValue();
                 }
 
                 if (processSetup.symbolicSampleSize == kSample64)
                 {
-                    data.outputs[0].channelBuffers64[c][i] = outSample;
+                    data.outputs[0].channelBuffers64[c][i] = outSample * xFader.getValue();
                 }
             }
 
             playhead.advance();
+            xFader.advance(1);
         }
 
         sampleIndex = size_t(playhead.getValue() * double(windowEnd - windowStart));

@@ -13,6 +13,8 @@ namespace TTK
             return result;
         }
 
+        // title, units, step count, default value normalized, flags, tag
+
         parameters.addParameter(
             STR16("Playhead"), nullptr, 0, 0.0, ParameterInfo::kCanAutomate, Playhead);
 
@@ -23,7 +25,7 @@ namespace TTK
             STR16("AutoPlay"), nullptr, 0, 0.0, ParameterInfo::kCanAutomate, AutoPlay);
 
         parameters.addParameter(
-            STR16("XFader"), nullptr, 0, 0.0, ParameterInfo::kCanAutomate, XFader);
+            STR16("XFader"), nullptr, 0, 1.0, ParameterInfo::kCanAutomate, XFader);
 
         // TODO: implement MIDI learn
         return result;
