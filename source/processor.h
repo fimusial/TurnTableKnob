@@ -59,6 +59,7 @@ namespace TTK
 
         SmoothFollowParameter playhead;
         SampleAccurate::Parameter xFader;
+        SampleAccurate::Parameter xFaderCurve;
         bool hold;
         double autoPlay;
         size_t sampleIndex;

@@ -45,7 +45,7 @@ namespace TTK
 
         // background
         context->setLineWidth(1.0);
-        context->setFrameColor(BorderColor);
+        context->setFrameColor(ThinBorderColor);
         context->setFillColor(BackgroundColor);
         context->drawRect(viewSize, kDrawFilledAndStroked);
 
@@ -60,7 +60,7 @@ namespace TTK
                 .scale(viewSize.getWidth() / (end - start), 1.0));
 
             context->setLineWidth(2.0);
-            context->setFrameColor(PrimaryColor);
+            context->setFrameColor(WaveformColor);
             drawPolygon(context, waveform, (size_t)start, (size_t)end);
         }
 
@@ -70,7 +70,7 @@ namespace TTK
         {
             playhead *= viewSize.getWidth();
             CRect playheadBar(playhead - 1.0, 0.0, playhead + 1.0, viewSize.getHeight());
-            context->setFillColor(SecondaryColor);
+            context->setFillColor(MainColor);
             context->drawRect(playheadBar, kDrawFilled);
         }
 
@@ -82,7 +82,7 @@ namespace TTK
         context->setFont(kSystemFont, filePathStringBox.getHeight());
         context->drawString(filePath, filePathStringBox, kRightText);
         context->setLineWidth(1.0);
-        context->setFrameColor(BorderColor);
+        context->setFrameColor(ThinBorderColor);
         context->drawRect(filePathBox, kDrawStroked);
 
         // hold indicator
@@ -97,10 +97,10 @@ namespace TTK
             context->setFontColor(TextColor);
             context->setFont(kSystemFont, holdIndicatorStringBox.getHeight());
             context->drawString("HOLD", holdIndicatorStringBox, kRightText);
-            context->setFillColor(SecondaryColor);
-            context->drawEllipse(holdIndicatorEllipseBox, kDrawFilled);
+            context->setFrameColor(ThinBorderColor);
+            context->setFillColor(MainColor);
+            context->drawEllipse(holdIndicatorEllipseBox, kDrawFilledAndStroked);
             context->setLineWidth(1.0);
-            context->setFrameColor(BorderColor);
             context->drawRect(holdIndicatorBox, kDrawStroked);
         }
 
@@ -115,9 +115,9 @@ namespace TTK
         context->setFont(kSystemFont, deClickerStringBox.getHeight());
         context->drawString("DC", deClickerStringBox, kRightText);
         context->setLineWidth(1.0);
-        context->setFrameColor(BorderColor);
+        context->setFrameColor(ThinBorderColor);
         context->drawRect(deClickerBox, kDrawStroked);
-        context->setFillColor(BackgroundColor);
+        context->setFillColor(MainColor);
         context->drawRect(deClickerBarBox, kDrawFilledAndStroked);
 
         setDirty(false);

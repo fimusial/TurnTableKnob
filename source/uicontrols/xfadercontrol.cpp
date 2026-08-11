@@ -32,7 +32,6 @@ namespace TTK
         // range
         context->setFillColor(ShadowColor);
         context->drawRect(CRect(rangeBox).offset(5, 5), kDrawFilled);
-        context->setFillColor(PrimaryColor);
         context->drawBitmap(rangeBitmap, rangeBox);
 
         // handle
@@ -60,7 +59,7 @@ namespace TTK
         }
 
         beginEdit();
-        setValue((event.mousePosition.x - insetRangeBox.left) / insetRangeBox.getWidth());
+        setValue((event.mousePosition.x - insetRangeBox.left - 0.5 * handleBitmapSize.x) / insetRangeBox.getWidth());
         valueChanged();
         event.consumed = true;
     }
@@ -72,7 +71,7 @@ namespace TTK
             return;
         }
 
-        setValue((event.mousePosition.x - insetRangeBox.left) / insetRangeBox.getWidth());
+        setValue((event.mousePosition.x - insetRangeBox.left - 0.5 * handleBitmapSize.x) / insetRangeBox.getWidth());
         valueChanged();
         event.consumed = true;
     }

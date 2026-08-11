@@ -4,6 +4,7 @@
 #include "cids.h"
 #include "consts.h"
 #include "uicontrols/autoplaycontrol.h"
+#include "uicontrols/xfadercurvecontrol.h"
 
 namespace TTK
 {
@@ -15,6 +16,7 @@ namespace TTK
         windowEnd(MIN_WINDOW_SIZE),
         playhead(Playhead, 0.0),
         xFader(XFader, 1.0),
+        xFaderCurve(XFaderCurve, 0.0),
         hold(false),
         autoPlay(AP_STOP),
         sampleIndex(0),
@@ -260,6 +262,10 @@ namespace TTK
                 xFader.beginChanges(queue);
                 break;
 
+            case XFaderCurve:
+                xFaderCurve.beginChanges(queue);
+                break;
+
             case Hold:
                 queue->getPoint(pointCount - 1, _, value);
                 hold = value > 0.5;
@@ -280,6 +286,7 @@ namespace TTK
     {
         playhead.endChanges();
         xFader.endChanges();
+        xFaderCurve.endChanges();
     }
 
     void TurnTableKnobProcessor::processSamples(ProcessData& data)
@@ -342,19 +349,21 @@ namespace TTK
             for (int c = 0; c < channelCount; c++)
             {
                 double outSample = deClicker.getGain() * segment->channels[c][windowStart + sampleIndex];
+                outSample *= getXFaderGain(xFader.getValue(), xFaderCurve.getValue());
 
                 if (processSetup.symbolicSampleSize == kSample32)
                 {
-                    data.outputs[0].channelBuffers32[c][i] = outSample * xFader.getValue();
+                    data.outputs[0].channelBuffers32[c][i] = outSample;
                 }
 
                 if (processSetup.symbolicSampleSize == kSample64)
                 {
-                    data.outputs[0].channelBuffers64[c][i] = outSample * xFader.getValue();
+                    data.outputs[0].channelBuffers64[c][i] = outSample;
                 }
             }
 
             xFader.advance(1);
+            xFaderCurve.advance(1);
 
             if (autoPlay == AP_PLAY)
             {
@@ -404,20 +413,22 @@ namespace TTK
                 double outSample = (windowPlayhead - floor(windowPlayhead)) * (inSampleB - inSampleA) + inSampleA;
 
                 outSample *= deClicker.getGain();
+                outSample *= getXFaderGain(xFader.getValue(), xFaderCurve.getValue());
 
                 if (processSetup.symbolicSampleSize == kSample32)
                 {
-                    data.outputs[0].channelBuffers32[c][i] = outSample * xFader.getValue();
+                    data.outputs[0].channelBuffers32[c][i] = outSample;
                 }
 
                 if (processSetup.symbolicSampleSize == kSample64)
                 {
-                    data.outputs[0].channelBuffers64[c][i] = outSample * xFader.getValue();
+                    data.outputs[0].channelBuffers64[c][i] = outSample;
                 }
             }
 
             playhead.advance();
             xFader.advance(1);
+            xFaderCurve.advance(1);
         }
 
         sampleIndex = size_t(playhead.getValue() * double(windowEnd - windowStart));

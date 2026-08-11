@@ -80,6 +80,14 @@
                             "size": "400, 100",
                             "rangeBox": "810, 210, 1090, 290"
                         }
+                    },
+                    "XFaderCurveControl": {
+                        "attributes": {
+                            "class": "XFaderCurveControl",
+                            "origin": "1100, 200",
+                            "size": "100, 100",
+                            "curveBox": "1110, 210, 1190, 290"
+                        }
                     }
                 }
             }

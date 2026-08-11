@@ -18,6 +18,7 @@ namespace TTK
         Playhead = 256,
         Hold,
         AutoPlay,
-        XFader
+        XFader,
+        XFaderCurve
     };
 }

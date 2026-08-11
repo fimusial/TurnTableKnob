@@ -44,6 +44,10 @@ smtg_add_vst3plugin(TurnTableKnob
     source/uicontrols/xfadercontrol.h
     source/uicontrols/xfadercontrolfactory.cpp
     source/uicontrols/xfadercontrolfactory.h
+    source/uicontrols/xfadercurvecontrol.cpp
+    source/uicontrols/xfadercurvecontrol.h
+    source/uicontrols/xfadercurvecontrolfactory.cpp
+    source/uicontrols/xfadercurvecontrolfactory.h
     source/cids.h
     source/consts.h
     source/controller.cpp
