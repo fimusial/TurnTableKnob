@@ -1,6 +1,7 @@
 #include "controller.h"
 
 #include "vstgui/plugin-bindings/vst3editor.h"
+#include "base/source/fstreamer.h"
 #include "cids.h"
 
 namespace TTK
@@ -41,8 +42,30 @@ namespace TTK
 
     tresult PLUGIN_API TurnTableKnobController::setComponentState(IBStream* state)
     {
-        // TODO
         if (!state)
+        {
+            return kInvalidArgument;
+        }
+
+        IBStreamer streamer(state, kLittleEndian);
+
+        double autoPlay = 0.0;
+        streamer.readDouble(autoPlay);
+        if (setParamNormalized(AutoPlay, autoPlay) == kResultFalse)
+        {
+            return kResultFalse;
+        }
+
+        double xFaderValue = 1.0;
+        streamer.readDouble(xFaderValue);
+        if (setParamNormalized(XFader, xFaderValue) == kResultFalse)
+        {
+            return kResultFalse;
+        }
+
+        double xFaderCurveValue = 0.0;
+        streamer.readDouble(xFaderCurveValue);
+        if (setParamNormalized(XFaderCurve, xFaderCurveValue) == kResultFalse)
         {
             return kResultFalse;
         }

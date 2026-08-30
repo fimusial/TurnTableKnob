@@ -81,15 +81,53 @@ namespace TTK
 
     tresult PLUGIN_API TurnTableKnobProcessor::setState(IBStream* state)
     {
-        // TODO
+        if (!state)
+        {
+            return kInvalidArgument;
+        }
+
         IBStreamer streamer(state, kLittleEndian);
+
+        if (!streamer.readDouble(autoPlay))
+        {
+            autoPlay = AP_STOP;
+        }
+
+        double xFaderValue = 1.0;
+        streamer.readDouble(xFaderValue);
+        xFader.setValue(xFaderValue);
+
+        double xFaderCurveValue = 0.0;
+        streamer.readDouble(xFaderCurveValue);
+        xFaderCurve.setValue(xFaderCurveValue);
+
         return kResultOk;
     }
 
     tresult PLUGIN_API TurnTableKnobProcessor::getState(IBStream* state)
     {
-        // TODO
+        if (!state)
+        {
+            return kInvalidArgument;
+        }
+
         IBStreamer streamer(state, kLittleEndian);
+
+        if (!streamer.writeDouble(autoPlay))
+        {
+            return kResultFalse;
+        }
+
+        if (!streamer.writeDouble(xFader.getValue()))
+        {
+            return kResultFalse;
+        }
+
+        if (!streamer.writeDouble(xFaderCurve.getValue()))
+        {
+            return kResultFalse;
+        }
+
         return kResultOk;
     }
 

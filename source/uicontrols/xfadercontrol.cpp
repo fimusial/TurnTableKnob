@@ -14,7 +14,7 @@ namespace TTK
     {
         // TODO: real bitmaps, move to consts together with uidesc
         rangeBitmap = VSTGUI::owned(new CBitmap("xfader-range.bmp"));
-        handleBitmap = VSTGUI::owned(new CBitmap("xfader-handle.png"));
+        handleBitmap = VSTGUI::owned(new CBitmap("xfader-handle.bmp"));
 
         handleBitmapSize = handleBitmap.get()->getSize();
         insetRangeBox = CRect(rangeBox).inset(0, (rangeBox.getHeight() - handleBitmapSize.y) / 2.0);
