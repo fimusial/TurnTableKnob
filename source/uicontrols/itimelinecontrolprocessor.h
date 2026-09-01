@@ -9,7 +9,7 @@ namespace TTK
     public:
         virtual AudioSegment32* processNewFilePath(std::string newFilePath) = 0;
         virtual AudioSegment32* getSegment() = 0;
-        virtual std::string getFilePath() = 0;
+        virtual const std::string& getFilePath() = 0;
         virtual size_t getWindowStart() = 0;
         virtual size_t getWindowEnd() = 0;
         virtual double getPlayheadValue() = 0;

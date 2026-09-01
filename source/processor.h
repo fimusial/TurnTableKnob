@@ -37,7 +37,7 @@ namespace TTK
 
         AudioSegment32* processNewFilePath(std::string newFilePath) override;
         AudioSegment32* getSegment() override;
-        std::string getFilePath() override;
+        const std::string& getFilePath() override;
         size_t getWindowStart() override;
         size_t getWindowEnd() override;
         double getPlayheadValue() override;
@@ -52,7 +52,6 @@ namespace TTK
         TimelineControlFactory timelineControlFactory;
         AudioSegment32* segment;
 
-        // TODO: persist plugin state
         std::string filePath;
         size_t windowStart;
         size_t windowEnd;

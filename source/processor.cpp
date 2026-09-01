@@ -101,6 +101,12 @@ namespace TTK
         streamer.readDouble(xFaderCurveValue);
         xFaderCurve.setValue(xFaderCurveValue);
 
+        char* filePathChars = streamer.readStr8();
+        if (filePathChars)
+        {
+            processNewFilePath(std::string(filePathChars));
+        }
+
         return kResultOk;
     }
 
@@ -124,6 +130,11 @@ namespace TTK
         }
 
         if (!streamer.writeDouble(xFaderCurve.getValue()))
+        {
+            return kResultFalse;
+        }
+
+        if (!filePath.empty() && !streamer.writeStr8(filePath.c_str()))
         {
             return kResultFalse;
         }
@@ -173,7 +184,7 @@ namespace TTK
         return segment;
     }
 
-    std::string TurnTableKnobProcessor::getFilePath()
+    const std::string& TurnTableKnobProcessor::getFilePath()
     {
         return filePath;
     }

@@ -41,6 +41,13 @@ namespace TTK
 
     void TimelineControl::draw(CDrawContext* context)
     {
+        const std::string& processorFilePath = processor.getFilePath();
+        if (!processorFilePath.empty() && filePath != processorFilePath)
+        {
+            readWaveform();
+            readFilePath();
+        }
+
         CRect viewSize = getViewSize();
 
         // background
@@ -255,7 +262,7 @@ namespace TTK
 
     void TimelineControl::readFilePath()
     {
-        std::string newFilePath = processor.getFilePath();
+        const std::string& newFilePath = processor.getFilePath();
         filePath = newFilePath.empty() ? DEFAULT_FILE_PATH : newFilePath;
     }
 }
