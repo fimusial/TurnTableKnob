@@ -31,7 +31,6 @@ namespace TTK
         parameters.addParameter(
             STR16("XFaderCurve"), nullptr, 0, 0.0, ParameterInfo::kCanAutomate, XFaderCurve);
 
-        // TODO: implement MIDI learn
         return result;
     }
 
@@ -93,9 +92,14 @@ namespace TTK
         return nullptr;
     }
 
-    tresult PLUGIN_API TurnTableKnobController::onLiveMIDIControllerInput(
-        int32 busIndex, int16 channel, CtrlNumber midiCC)
+    tresult PLUGIN_API TurnTableKnobController::getMidiControllerAssignment(int32 busIndex, int16 channel, CtrlNumber midiCC, ParamID& id)
     {
+        if (busIndex != 0)
+        {
+            return kResultFalse;
+        }
+
+        id = XFader;
         return kResultOk;
     }
 }
