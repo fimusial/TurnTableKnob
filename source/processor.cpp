@@ -51,8 +51,7 @@ namespace TTK
         return AudioEffect::terminate();
     }
 
-    tresult PLUGIN_API TurnTableKnobProcessor::setBusArrangements(
-        SpeakerArrangement* inputs, int32 numIns, SpeakerArrangement* outputs, int32 numOuts)
+    tresult PLUGIN_API TurnTableKnobProcessor::setBusArrangements(SpeakerArrangement* inputs, int32 numIns, SpeakerArrangement* outputs, int32 numOuts)
     {
         if (numOuts != 1)
         {
@@ -101,10 +100,16 @@ namespace TTK
         streamer.readDouble(xFaderCurveValue);
         xFaderCurve.setValue(xFaderCurveValue);
 
+        size_t windowStartValue = 0;
+        streamer.readInt64u(windowStartValue);
+
+        size_t windowEndValue = MIN_WINDOW_SIZE;
+        streamer.readInt64u(windowEndValue);
+
         char* filePathChars = streamer.readStr8();
-        if (filePathChars)
+        if (!filePathChars || !processNewFilePath(std::string(filePathChars), windowStartValue, windowEndValue))
         {
-            processNewFilePath(std::string(filePathChars));
+            return kResultFalse;
         }
 
         return kResultOk;
@@ -134,6 +139,16 @@ namespace TTK
             return kResultFalse;
         }
 
+        if (!streamer.writeInt64u(windowStart))
+        {
+            return kResultFalse;
+        }
+
+        if (!streamer.writeInt64u(windowEnd))
+        {
+            return kResultFalse;
+        }
+
         if (!filePath.empty() && !streamer.writeStr8(filePath.c_str()))
         {
             return kResultFalse;
@@ -150,33 +165,9 @@ namespace TTK
         return kResultOk;
     }
 
-    AudioSegment32* TurnTableKnobProcessor::processNewFilePath(std::string newFilePath)
+    bool TurnTableKnobProcessor::setNewFilePath(const std::string& newFilePath)
     {
-        if (newFilePath.empty())
-        {
-            return nullptr;
-        }
-
-        AudioSegment32* newSegment = AudioSegment32::fromFile(newFilePath);
-        if (!newSegment)
-        {
-            return nullptr;
-        }
-
-        AudioSegment32* oldSegment = segment;
-        filePath = newFilePath;
-        windowStart = 0;
-        windowEnd = MIN_WINDOW_SIZE;
-        sampleIndex = 0;
-        playhead.reset();
-        segment = newSegment;
-
-        if (oldSegment)
-        {
-            delete oldSegment;
-        }
-
-        return newSegment;
+        return processNewFilePath(newFilePath, 0, MIN_WINDOW_SIZE);
     }
 
     AudioSegment32* TurnTableKnobProcessor::getSegment()
@@ -226,7 +217,7 @@ namespace TTK
 
     void TurnTableKnobProcessor::scrollSegment(int by)
     {
-        if (!segment)
+        if (!segment || by == 0)
         {
             return;
         }
@@ -248,7 +239,7 @@ namespace TTK
 
     void TurnTableKnobProcessor::zoomSegment(int by)
     {
-        if (!segment)
+        if (!segment || by == 0)
         {
             return;
         }
@@ -275,6 +266,59 @@ namespace TTK
     void TurnTableKnobProcessor::resetHold(bool newValue)
     {
         hold = newValue;
+    }
+
+    bool TurnTableKnobProcessor::processNewFilePath(const std::string& newFilePath, size_t newWindowStart, size_t newWindowEnd)
+    {
+        if (newFilePath.empty())
+        {
+            return false;
+        }
+
+        if (newWindowStart >= newWindowEnd)
+        {
+            return false;
+        }
+
+        AudioSegment32* newSegment = AudioSegment32::fromFile(newFilePath);
+        if (!newSegment)
+        {
+            return false;
+        }
+
+        if (newSegment->sampleCount < MIN_WINDOW_SIZE)
+        {
+            return false;
+        }
+
+        if (newWindowEnd > newSegment->sampleCount - 2)
+        {
+            return false;
+        }
+
+        AudioSegment32* oldSegment = segment;
+        double previousAutoPlay = autoPlay;
+
+        autoPlay = AP_STOP;
+        sampleIndex = 0;
+        playhead.reset();
+
+        windowStart = 0;
+        windowEnd = MIN_WINDOW_SIZE;
+
+        filePath = newFilePath;
+        segment = newSegment;
+
+        windowEnd = newWindowEnd;
+        windowStart = newWindowStart;
+        autoPlay = previousAutoPlay;
+
+        if (oldSegment)
+        {
+            delete oldSegment;
+        }
+
+        return true;
     }
 
     void TurnTableKnobProcessor::beginParameterChanges(ProcessData& data)

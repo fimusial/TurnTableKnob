@@ -7,7 +7,7 @@ namespace TTK
     class ITimelineControlProcessor
     {
     public:
-        virtual AudioSegment32* processNewFilePath(std::string newFilePath) = 0;
+        virtual bool setNewFilePath(const std::string& newFilePath) = 0;
         virtual AudioSegment32* getSegment() = 0;
         virtual const std::string& getFilePath() = 0;
         virtual size_t getWindowStart() = 0;

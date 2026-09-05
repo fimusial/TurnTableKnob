@@ -25,9 +25,8 @@ namespace TTK
         tresult PLUGIN_API setComponentState(IBStream* state) SMTG_OVERRIDE;
         tresult PLUGIN_API setState(IBStream* state) SMTG_OVERRIDE;
         tresult PLUGIN_API getState(IBStream* state) SMTG_OVERRIDE;
-        IPlugView* PLUGIN_API createView(FIDString name) SMTG_OVERRIDE;
-
         tresult PLUGIN_API getMidiControllerAssignment(int32 busIndex, int16 channel, CtrlNumber midiCC, ParamID& id) SMTG_OVERRIDE;
+        IPlugView* PLUGIN_API createView(FIDString name) SMTG_OVERRIDE;
 
         DEFINE_INTERFACES
             DEF_INTERFACE(IMidiMapping)

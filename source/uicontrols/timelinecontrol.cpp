@@ -223,7 +223,7 @@ namespace TTK
             return;
         }
 
-        if (processor.processNewFilePath(selectorResult))
+        if (processor.setNewFilePath(selectorResult))
         {
             readWaveform();
             readFilePath();

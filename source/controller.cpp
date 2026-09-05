@@ -82,16 +82,6 @@ namespace TTK
         return kResultOk;
     }
 
-    IPlugView* PLUGIN_API TurnTableKnobController::createView(FIDString name)
-    {
-        if (FIDStringsEqual(name, Vst::ViewType::kEditor))
-        {
-            return new VSTGUI::VST3Editor(this, "view", "editor.uidesc");
-        }
-
-        return nullptr;
-    }
-
     tresult PLUGIN_API TurnTableKnobController::getMidiControllerAssignment(int32 busIndex, int16 channel, CtrlNumber midiCC, ParamID& id)
     {
         if (busIndex != 0)
@@ -101,5 +91,15 @@ namespace TTK
 
         id = XFader;
         return kResultOk;
+    }
+
+    IPlugView* PLUGIN_API TurnTableKnobController::createView(FIDString name)
+    {
+        if (FIDStringsEqual(name, Vst::ViewType::kEditor))
+        {
+            return new VSTGUI::VST3Editor(this, "view", "editor.uidesc");
+        }
+
+        return nullptr;
     }
 }
