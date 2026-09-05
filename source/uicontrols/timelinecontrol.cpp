@@ -217,13 +217,7 @@ namespace TTK
         selector->run(this);
 
         const char* selectorResult = selector->getSelectedFile(0);
-        if (!selectorResult)
-        {
-            selector->forget();
-            return;
-        }
-
-        if (processor.setNewFilePath(selectorResult))
+        if (selectorResult && processor.setNewFilePath(selectorResult))
         {
             readWaveform();
             readFilePath();

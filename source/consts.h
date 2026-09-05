@@ -12,6 +12,7 @@ namespace TTK
     static const CColor MainColor = CColor(0x0b, 0x71, 0x0b);
     static const CColor ShadowColor = CColor(0x00, 0x00, 0x00);
 
+    // TODO: file path error messages
     static const char* DEFAULT_FILE_PATH = "select a .wav file...";
     static const double SAMPLE_WAVEFORM_RATIO = 128.0;
     static const size_t MIN_WINDOW_SIZE = 32768;
