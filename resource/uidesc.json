@@ -4,40 +4,10 @@
         "bitmaps": {},
         "fonts": {},
         "colors": {
-            "Background": "#111111ff"
+            "Background": "#ff0000ff"
         },
         "control-tags": {},
-        "custom": {
-            "FocusDrawing": {},
-            "VST3Editor": {
-                "Path": "D:/Data/code/cpp/turn-table-knob/TurnTableKnob/resource/editor.uidesc"
-            },
-            "UIGridController": {
-                "Grids": "1x 1,5x 5,10x 10,12x 12,15x 15"
-            },
-            "UITemplateController": {
-                "SelectedTemplate": "view"
-            },
-            "UIEditController": {
-                "EditViewScale": "1",
-                "EditorSize": "0, 0, 1856, 770",
-                "SplitViewSize_0_0": "0.8252688172043011194389805496030021458864",
-                "SplitViewSize_0_1": "0.1478494623655914053106386063518584705889",
-                "SplitViewSize_1_0": "0.4865591397849462484970217701629735529423",
-                "SplitViewSize_1_1": "0.5080645161290322509017869379022158682346",
-                "SplitViewSize_2_0": "0.6961206896551723755095508749946020543575",
-                "SplitViewSize_2_1": "0.3011853448275861877547754374973010271788",
-                "TabSwitchValue": "2",
-                "Version": "1"
-            },
-            "UIAttributesController": {},
-            "UIViewCreatorDataSource": {
-                "SelectedRow": "28"
-            },
-            "UIColorsDataSource": {
-                "SelectedRow": "0"
-            }
-        },
+        "custom": {},
         "templates": {
             "view": {
                 "attributes": {
@@ -56,7 +26,8 @@
                         "attributes": {
                             "class": "TimelineControl",
                             "origin": "0, 0",
-                            "size": "1200, 200",
+                            "size": "1200, 300",
+                            "timelineBox": "0, 0, 1200, 200",
                             "filePathBox": "0, 0, 200, 20",
                             "holdIndicatorBox": "0, 180, 60, 200",
                             "deClickerBox": "1140, 180, 1200, 200"

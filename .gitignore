@@ -1,14 +1,19 @@
 *
 !.gitignore
-!README.md
-!CMakeLists.txt
+
+!cmrc/
 !resource/
 !source/
 !source/audiofile/
 !source/processing/
 !source/uicontrols/
+
 !*.h
 !*.cpp
-!*.uidesc
+!*.json
+!*.bmp
+!*.cmake
+!*.txt
+!*.md
 
 source/audiofile/dr_wav.h

@@ -14,6 +14,7 @@ namespace TTK
     public:
         TimelineControl(
             const CRect& viewSize,
+            const CRect& timelineBox,
             const CRect& filePathBox,
             const CRect& holdIndicatorBox,
             const CRect& deClickerBox,
@@ -29,10 +30,12 @@ namespace TTK
         CBaseObject* newCopy() const override { return new TimelineControl(*this); }
 
     private:
+        CRect timelineBox;
         CRect filePathBox;
         CRect holdIndicatorBox;
         CRect deClickerBox;
 
+        SharedPointer<CBitmap> panelBackgroundBitmap;
         HoldControl* holdControl;
         ITimelineControlProcessor& processor;
         UTF8String filePath;

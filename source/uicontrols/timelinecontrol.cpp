@@ -1,19 +1,23 @@
 #include "timelinecontrol.h"
 
+#include "vstgui/lib/platform/platformfactory.h"
 #include "../cids.h"
 #include "../consts.h"
+#include "../resourcemanager.h"
 #include "cdrawcontextextensions.h"
 
 namespace TTK
 {
     TimelineControl::TimelineControl(
         const CRect& viewSize,
+        const CRect& timelineBox,
         const CRect& filePathBox,
         const CRect& holdIndicatorBox,
         const CRect& deClickerBox,
         IControlListener* listener,
         ITimelineControlProcessor& processor)
         : CControl(viewSize, listener, Playhead),
+        timelineBox(timelineBox),
         filePathBox(filePathBox),
         holdIndicatorBox(holdIndicatorBox),
         deClickerBox(deClickerBox),
@@ -21,6 +25,11 @@ namespace TTK
         filePath(DEFAULT_FILE_PATH),
         waveform(0)
     {
+        std::string panelBackgroundContent = ResourceManager::getFileContent("panel-background.bmp");
+
+        const IPlatformFactory& factory = VSTGUI::getPlatformFactory();
+        panelBackgroundBitmap = VSTGUI::owned(new CBitmap(factory.createBitmapFromMemory(panelBackgroundContent.c_str(), (unsigned int)panelBackgroundContent.size())));
+
         holdControl = new HoldControl(viewSize, listener, processor);
         listener->controlTagDidChange(holdControl);
 
@@ -48,13 +57,14 @@ namespace TTK
             readFilePath();
         }
 
-        CRect viewSize = getViewSize();
+        // panel background
+        context->drawBitmap(panelBackgroundBitmap, getViewSize());
 
-        // background
+        // timeline background
         context->setLineWidth(1.0);
         context->setFrameColor(ThinBorderColor);
         context->setFillColor(BackgroundColor);
-        context->drawRect(viewSize, kDrawFilledAndStroked);
+        context->drawRect(timelineBox, kDrawFilledAndStroked);
 
         // waveform
         if (waveform.size() > 1)
@@ -64,7 +74,7 @@ namespace TTK
 
             CDrawContext::Transform _(*context, CGraphicsTransform()
                 .translate(-start, 0.0)
-                .scale(viewSize.getWidth() / (end - start), 1.0));
+                .scale(timelineBox.getWidth() / (end - start), 1.0));
 
             context->setLineWidth(2.0);
             context->setFrameColor(WaveformColor);
@@ -75,8 +85,8 @@ namespace TTK
         double playhead = processor.getPlayheadValue();
         if (0.0 < playhead && playhead < 1.0)
         {
-            playhead *= viewSize.getWidth();
-            CRect playheadBar(playhead - 1.0, 0.0, playhead + 1.0, viewSize.getHeight());
+            playhead *= timelineBox.getWidth();
+            CRect playheadBar(playhead - 1.0, 0.0, playhead + 1.0, timelineBox.getHeight());
             context->setFillColor(MainColor);
             context->drawRect(playheadBar, kDrawFilled);
         }
@@ -152,7 +162,7 @@ namespace TTK
 
         beginEdit();
         holdControl->begin();
-        setValue(event.mousePosition.x / getViewSize().getWidth());
+        setValue(event.mousePosition.x / timelineBox.getWidth());
         processor.resetPlayhead(getValue());
         valueChanged();
     }
@@ -164,7 +174,7 @@ namespace TTK
             return;
         }
 
-        setValue(event.mousePosition.x / getViewSize().getWidth());
+        setValue(event.mousePosition.x / timelineBox.getWidth());
         valueChanged();
 
         event.consumed = true;
@@ -240,7 +250,7 @@ namespace TTK
         waveform.resize(segment->sampleCount / SAMPLE_WAVEFORM_RATIO);
 
         int channelCount = (int)segment->channels.size();
-        double height = getViewSize().getHeight();
+        double height = timelineBox.getHeight();
         for (size_t waveformSample = 0; waveformSample < waveform.size(); waveformSample++)
         {
             double sum = 0.0;

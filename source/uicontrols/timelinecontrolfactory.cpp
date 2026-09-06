@@ -41,6 +41,12 @@ namespace TTK
             return nullptr;
         }
 
+        CRect timelineBox;
+        if (!attributes.getRectAttribute("timelineBox", timelineBox))
+        {
+            return nullptr;
+        }
+
         CRect filePathBox;
         if (!attributes.getRectAttribute("filePathBox", filePathBox))
         {
@@ -60,7 +66,7 @@ namespace TTK
         }
 
         return new TimelineControl(
-            CRect(origin, size), filePathBox, holdIndicatorBox, deClickerBox,
+            CRect(origin, size), timelineBox, filePathBox, holdIndicatorBox, deClickerBox,
             description->getControlListener("TurnTableKnobController"), processor);
     }
 }

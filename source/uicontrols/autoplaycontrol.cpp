@@ -1,7 +1,9 @@
 #include "autoplaycontrol.h"
 
+#include "vstgui/lib/platform/platformfactory.h"
 #include "../cids.h"
 #include "../consts.h"
+#include "../resourcemanager.h"
 
 namespace TTK
 {
@@ -18,11 +20,16 @@ namespace TTK
         stop(stop),
         play(play)
     {
-        // TODO: real bitmaps, move to consts together with uidesc
-        reptBitmap = VSTGUI::owned(new CBitmap("rept-button.bmp"));
-        backBitmap = VSTGUI::owned(new CBitmap("back-button.bmp"));
-        stopBitmap = VSTGUI::owned(new CBitmap("stop-button.bmp"));
-        playBitmap = VSTGUI::owned(new CBitmap("play-button.bmp"));
+        std::string reptButtonContent = ResourceManager::getFileContent("rept-button.bmp");
+        std::string backButtonContent = ResourceManager::getFileContent("back-button.bmp");
+        std::string stopButtonContent = ResourceManager::getFileContent("stop-button.bmp");
+        std::string playButtonContent = ResourceManager::getFileContent("play-button.bmp");
+
+        const IPlatformFactory& factory = VSTGUI::getPlatformFactory();
+        reptBitmap = VSTGUI::owned(new CBitmap(factory.createBitmapFromMemory(reptButtonContent.c_str(), (unsigned int)reptButtonContent.size())));
+        backBitmap = VSTGUI::owned(new CBitmap(factory.createBitmapFromMemory(backButtonContent.c_str(), (unsigned int)backButtonContent.size())));
+        stopBitmap = VSTGUI::owned(new CBitmap(factory.createBitmapFromMemory(stopButtonContent.c_str(), (unsigned int)stopButtonContent.size())));
+        playBitmap = VSTGUI::owned(new CBitmap(factory.createBitmapFromMemory(playButtonContent.c_str(), (unsigned int)playButtonContent.size())));
     }
 
     AutoPlayControl::~AutoPlayControl()

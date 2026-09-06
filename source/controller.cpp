@@ -2,7 +2,9 @@
 
 #include "vstgui/plugin-bindings/vst3editor.h"
 #include "base/source/fstreamer.h"
+#include "vstgui/uidescription/uicontentprovider.h"
 #include "cids.h"
+#include "resourcemanager.h"
 
 namespace TTK
 {
@@ -97,7 +99,14 @@ namespace TTK
     {
         if (FIDStringsEqual(name, Vst::ViewType::kEditor))
         {
-            return new VSTGUI::VST3Editor(this, "view", "editor.uidesc");
+            std::string uiDescription = ResourceManager::getFileContent("uidesc.json");
+
+            return new VSTGUI::VST3Editor(
+                new VSTGUI::UIDescription(
+                    (VSTGUI::IContentProvider*)new VSTGUI::MemoryContentProvider(uiDescription.c_str(), (unsigned int)uiDescription.size()),
+                    nullptr),
+                this,
+                "view");
         }
 
         return nullptr;

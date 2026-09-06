@@ -1,7 +1,9 @@
 #include "xfadercontrol.h"
 
+#include "vstgui/lib/platform/platformfactory.h"
 #include "../cids.h"
 #include "../consts.h"
+#include "../resourcemanager.h"
 
 namespace TTK
 {
@@ -12,9 +14,12 @@ namespace TTK
         : CControl(viewSize, listener, XFader),
         rangeBox(rangeBox)
     {
-        // TODO: real bitmaps, move to consts together with uidesc
-        rangeBitmap = VSTGUI::owned(new CBitmap("xfader-range.bmp"));
-        handleBitmap = VSTGUI::owned(new CBitmap("xfader-handle.bmp"));
+        std::string rangeContent = ResourceManager::getFileContent("xfader-range.bmp");
+        std::string handleContent = ResourceManager::getFileContent("xfader-handle.bmp");
+
+        const IPlatformFactory& factory = VSTGUI::getPlatformFactory();
+        rangeBitmap = VSTGUI::owned(new CBitmap(factory.createBitmapFromMemory(rangeContent.c_str(), (unsigned int)rangeContent.size())));
+        handleBitmap = VSTGUI::owned(new CBitmap(factory.createBitmapFromMemory(handleContent.c_str(), (unsigned int)handleContent.size())));
 
         handleBitmapSize = handleBitmap.get()->getSize();
         insetRangeBox = CRect(rangeBox).inset(0, (rangeBox.getHeight() - handleBitmapSize.y) / 2.0);
