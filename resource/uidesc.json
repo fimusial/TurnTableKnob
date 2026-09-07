@@ -3,15 +3,17 @@
         "version": "1",
         "bitmaps": {},
         "fonts": {},
-        "colors": {
-            "Background": "#ff0000ff"
-        },
+        "colors": {},
         "control-tags": {},
-        "custom": {},
+        "custom": {
+            "VST3Editor": {
+                "Show Editor Button": "false"
+            }
+        },
         "templates": {
             "view": {
                 "attributes": {
-                    "background-color": "Background",
+                    "background-color": "#ff0000ff",
                     "background-color-draw-style": "filled",
                     "class": "CViewContainer",
                     "mouse-enabled": "true",

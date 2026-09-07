@@ -19,7 +19,7 @@ namespace TTK
     static const size_t MAX_WINDOW_SIZE = 131072;
     static const int SCROLL_SPEED = 4096;
     static const int ZOOM_SPEED = 4096;
-    static const int TIMER_DELAY_MS = 16;
+    static const int TIMER_DELAY_MS = 8;
 
     static const double DE_CLICKER_VEL_THRESHOLD = 5.0e-12;
     static const double DE_CLICKER_ACC_THRESHOLD = 5.0e-12;

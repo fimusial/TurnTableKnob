@@ -97,18 +97,17 @@ namespace TTK
 
     IPlugView* PLUGIN_API TurnTableKnobController::createView(FIDString name)
     {
-        if (FIDStringsEqual(name, Vst::ViewType::kEditor))
+        if (!FIDStringsEqual(name, Vst::ViewType::kEditor))
         {
-            std::string uiDescription = ResourceManager::getFileContent("uidesc.json");
-
-            return new VSTGUI::VST3Editor(
-                new VSTGUI::UIDescription(
-                    (VSTGUI::IContentProvider*)new VSTGUI::MemoryContentProvider(uiDescription.c_str(), (unsigned int)uiDescription.size()),
-                    nullptr),
-                this,
-                "view");
+            return nullptr;
         }
 
-        return nullptr;
+        std::string uiDescriptionContent = ResourceManager::getFileContent("uidesc.json");
+
+        VSTGUI::UIDescription* uiDescription = new VSTGUI::UIDescription(
+            (VSTGUI::IContentProvider*)new VSTGUI::MemoryContentProvider(uiDescriptionContent.c_str(), (unsigned int)uiDescriptionContent.size()),
+            nullptr);
+
+        return new VSTGUI::VST3Editor(uiDescription, this, "view");
     }
 }
