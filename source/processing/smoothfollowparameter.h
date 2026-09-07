@@ -19,7 +19,7 @@ namespace TTK
         double getFollowedValue();
         double getVelocity();
         double getAcceleration();
-        double advance();
+        double advance(double parameterOverride = -1.0);
 
     private:
         SampleAccurate::Parameter parameter;

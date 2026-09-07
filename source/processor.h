@@ -43,6 +43,7 @@ namespace TTK
         double getDeClickerValue() override;
         bool getHoldValue() override;
         void resetPlayhead(double newValue = 0.0) override;
+        void setUiPlayheadValue(double value) override;
         void scrollSegment(int samples) override;
         void zoomSegment(int samples) override;
         void resetHold(bool newValue = false) override;
@@ -55,6 +56,7 @@ namespace TTK
         size_t windowStart;
         size_t windowEnd;
 
+        double uiPlayheadValue;
         SmoothFollowParameter playhead;
         SampleAccurate::Parameter xFader;
         SampleAccurate::Parameter xFaderCurve;

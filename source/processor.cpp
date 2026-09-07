@@ -14,6 +14,7 @@ namespace TTK
         filePath(""),
         windowStart(0),
         windowEnd(MIN_WINDOW_SIZE),
+        uiPlayheadValue(-1.0),
         playhead(Playhead, 0.0),
         xFader(XFader, 1.0),
         xFaderCurve(XFaderCurve, 0.0),
@@ -215,6 +216,11 @@ namespace TTK
         playhead.reset(newValue);
     }
 
+    void TurnTableKnobProcessor::setUiPlayheadValue(double value)
+    {
+        uiPlayheadValue = value;
+    }
+
     void TurnTableKnobProcessor::scrollSegment(int by)
     {
         if (!segment || by == 0)
@@ -328,6 +334,9 @@ namespace TTK
             return;
         }
 
+        bool holdRising = false;
+        double queuePlayheadValue = -1.0;
+
         int count = data.inputParameterChanges->getParameterCount();
         for (int i = 0; i < count; i++)
         {
@@ -343,11 +352,13 @@ namespace TTK
                 continue;
             }
 
-            int _;
-            ParamValue value;
+            int _ = 0;
+            double value = 0.0;
+
             switch (queue->getParameterId())
             {
             case Playhead:
+                queue->getPoint(0, _, queuePlayheadValue);
                 playhead.beginChanges(queue);
                 break;
 
@@ -361,6 +372,7 @@ namespace TTK
 
             case Hold:
                 queue->getPoint(pointCount - 1, _, value);
+                holdRising = !hold && value;
                 hold = value > 0.5;
                 break;
 
@@ -371,6 +383,18 @@ namespace TTK
 
             default:
                 continue;
+            }
+        }
+
+        if (holdRising)
+        {
+            if (0.0 <= uiPlayheadValue && uiPlayheadValue <= 1.0)
+            {
+                playhead.reset(uiPlayheadValue);
+            }
+            else if (0.0 <= queuePlayheadValue && queuePlayheadValue <= 1.0)
+            {
+                playhead.reset(queuePlayheadValue);
             }
         }
     }
@@ -429,8 +453,7 @@ namespace TTK
 
         for (int i = 0; i < data.numSamples; i++)
         {
-            if (autoPlay == AP_STOP || autoPlay == AP_STOP_REPT
-                || (autoPlay == AP_PLAY || autoPlay == AP_BACK) && (sampleIndex <= 0 || windowWidth <= sampleIndex))
+            if (autoPlay == AP_STOP || autoPlay == AP_STOP_REPT || sampleIndex <= 0 || windowWidth <= sampleIndex)
             {
                 deClicker.close();
             }
@@ -519,7 +542,7 @@ namespace TTK
                 }
             }
 
-            playhead.advance();
+            playhead.advance(uiPlayheadValue);
             xFader.advance(1);
             xFaderCurve.advance(1);
         }

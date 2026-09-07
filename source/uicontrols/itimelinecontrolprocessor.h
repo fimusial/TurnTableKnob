@@ -16,6 +16,7 @@ namespace TTK
         virtual double getDeClickerValue() = 0;
         virtual bool getHoldValue() = 0;
         virtual void resetPlayhead(double newValue = 0.0) = 0;
+        virtual void setUiPlayheadValue(double value) = 0;
         virtual void scrollSegment(int samples) = 0;
         virtual void zoomSegment(int samples) = 0;
         virtual void resetHold(bool newValue = false) = 0;

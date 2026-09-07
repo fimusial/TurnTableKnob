@@ -164,6 +164,7 @@ namespace TTK
         holdControl->begin();
         setValue(event.mousePosition.x / timelineBox.getWidth());
         processor.resetPlayhead(getValue());
+        processor.setUiPlayheadValue(getValue());
         valueChanged();
     }
 
@@ -175,6 +176,7 @@ namespace TTK
         }
 
         setValue(event.mousePosition.x / timelineBox.getWidth());
+        processor.setUiPlayheadValue(getValue());
         valueChanged();
 
         event.consumed = true;
@@ -193,6 +195,7 @@ namespace TTK
             endEdit();
         }
 
+        processor.setUiPlayheadValue(-1.0);
         event.consumed = true;
     }
 

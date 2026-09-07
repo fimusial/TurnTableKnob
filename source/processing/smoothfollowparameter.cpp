@@ -61,9 +61,11 @@ namespace TTK
         return acceleration;
     }
 
-    double SmoothFollowParameter::advance()
+    double SmoothFollowParameter::advance(double parameterOverride)
     {
-        double diff = parameter.getValue() - value;
+        bool shouldOverride = 0.0 <= parameterOverride && parameterOverride <= 1.0;
+        double parameterValue = shouldOverride ? parameterOverride : parameter.getValue();
+        double diff = parameterValue - value;
         acceleration = stiffness * diff - damping * velocity;
 
         velocity += acceleration;
