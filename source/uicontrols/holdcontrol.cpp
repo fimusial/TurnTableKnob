@@ -1,7 +1,6 @@
 #include "holdcontrol.h"
 
 #include "../cids.h"
-#include "../consts.h"
 
 namespace TTK
 {

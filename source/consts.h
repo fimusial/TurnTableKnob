@@ -5,12 +5,15 @@
 namespace TTK
 {
     static const CColor BackgroundColor = CColor(0x17, 0x17, 0x17);
-    static const CColor ThinBorderColor = CColor(0x03, 0x2e, 0x03);
-    static const CColor ThickBorderColor = CColor(0x21, 0x21, 0x21);
+    static const CColor BorderColor = CColor(0x03, 0x2e, 0x03);
     static const CColor TextColor = CColor(0xff, 0xff, 0xff);
     static const CColor WaveformColor = CColor(0xdd, 0xdd, 0xdd);
     static const CColor MainColor = CColor(0x0b, 0x71, 0x0b);
     static const CColor ShadowColor = CColor(0x00, 0x00, 0x00);
+
+    static const double ThinLine = 1.0;
+    static const double ThickLine = 2.0;
+    static const double ShadowOffset = 5.0;
 
     // TODO: file path error messages
     static const char* DEFAULT_FILE_PATH = "select a .wav file...";

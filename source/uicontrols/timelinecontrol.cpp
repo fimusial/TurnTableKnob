@@ -28,7 +28,12 @@ namespace TTK
         std::string panelBackgroundContent = ResourceManager::getFileContent("panel-background.bmp");
 
         const IPlatformFactory& factory = VSTGUI::getPlatformFactory();
-        panelBackgroundBitmap = VSTGUI::owned(new CBitmap(factory.createBitmapFromMemory(panelBackgroundContent.c_str(), (unsigned int)panelBackgroundContent.size())));
+        panelBackgroundBitmap
+            = VSTGUI::owned(
+                new CBitmap(
+                    factory.createBitmapFromMemory(
+                        panelBackgroundContent.c_str(),
+                        (unsigned int)panelBackgroundContent.size())));
 
         holdControl = new HoldControl(viewSize, listener, processor);
         listener->controlTagDidChange(holdControl);
@@ -61,13 +66,29 @@ namespace TTK
         context->drawBitmap(panelBackgroundBitmap, getViewSize());
 
         // timeline background
-        context->setLineWidth(1.0);
-        context->setFrameColor(ThinBorderColor);
+        context->setLineWidth(ThinLine);
+        context->setFrameColor(BorderColor);
         context->setFillColor(BackgroundColor);
         context->drawRect(timelineBox, kDrawFilledAndStroked);
 
+        // file path box
+        CRect filePathStringBox = filePathBox;
+        filePathStringBox.inset(4, 4);
+        filePathStringBox.offset(0, -1);
+        context->setFontColor(TextColor);
+        context->setFont(kSystemFont, filePathStringBox.getHeight());
+        context->drawString(filePath, filePathStringBox, kRightText);
+        context->setLineWidth(ThinLine);
+        context->setFrameColor(BorderColor);
+        context->drawRect(filePathBox, kDrawStroked);
+
+        if (waveform.empty())
+        {
+            setDirty(false);
+            return;
+        }
+
         // waveform
-        if (waveform.size() > 1)
         {
             double start = (double)processor.getWindowStart() / SAMPLE_WAVEFORM_RATIO;
             double end = (double)processor.getWindowEnd() / SAMPLE_WAVEFORM_RATIO;
@@ -76,7 +97,7 @@ namespace TTK
                 .translate(-start, 0.0)
                 .scale(timelineBox.getWidth() / (end - start), 1.0));
 
-            context->setLineWidth(2.0);
+            context->setLineWidth(ThickLine);
             context->setFrameColor(WaveformColor);
             drawPolygon(context, waveform, (size_t)start, (size_t)end);
         }
@@ -91,17 +112,6 @@ namespace TTK
             context->drawRect(playheadBar, kDrawFilled);
         }
 
-        // file path box
-        CRect filePathStringBox = filePathBox;
-        filePathStringBox.inset(4, 4);
-        filePathStringBox.offset(0, -1);
-        context->setFontColor(TextColor);
-        context->setFont(kSystemFont, filePathStringBox.getHeight());
-        context->drawString(filePath, filePathStringBox, kRightText);
-        context->setLineWidth(1.0);
-        context->setFrameColor(ThinBorderColor);
-        context->drawRect(filePathBox, kDrawStroked);
-
         // hold indicator
         if (processor.getHoldValue())
         {
@@ -114,10 +124,10 @@ namespace TTK
             context->setFontColor(TextColor);
             context->setFont(kSystemFont, holdIndicatorStringBox.getHeight());
             context->drawString("HOLD", holdIndicatorStringBox, kRightText);
-            context->setFrameColor(ThinBorderColor);
+            context->setFrameColor(BorderColor);
             context->setFillColor(MainColor);
             context->drawEllipse(holdIndicatorEllipseBox, kDrawFilledAndStroked);
-            context->setLineWidth(1.0);
+            context->setLineWidth(ThinLine);
             context->drawRect(holdIndicatorBox, kDrawStroked);
         }
 
@@ -131,8 +141,8 @@ namespace TTK
         context->setFontColor(TextColor);
         context->setFont(kSystemFont, deClickerStringBox.getHeight());
         context->drawString("DC", deClickerStringBox, kRightText);
-        context->setLineWidth(1.0);
-        context->setFrameColor(ThinBorderColor);
+        context->setLineWidth(ThinLine);
+        context->setFrameColor(BorderColor);
         context->drawRect(deClickerBox, kDrawStroked);
         context->setFillColor(MainColor);
         context->drawRect(deClickerBarBox, kDrawFilledAndStroked);
@@ -155,6 +165,11 @@ namespace TTK
             return;
         }
 
+        if (waveform.empty())
+        {
+            return;
+        }
+
         if (isEditing())
         {
             return;
@@ -170,6 +185,11 @@ namespace TTK
 
     void TimelineControl::onMouseMoveEvent(MouseMoveEvent& event)
     {
+        if (waveform.empty())
+        {
+            return;
+        }
+
         if (!isEditing())
         {
             return;
@@ -184,6 +204,11 @@ namespace TTK
 
     void TimelineControl::onMouseUpEvent(MouseUpEvent& event)
     {
+        if (waveform.empty())
+        {
+            return;
+        }
+
         if (!event.buttonState.isLeft())
         {
             return;
@@ -201,6 +226,11 @@ namespace TTK
 
     void TimelineControl::onMouseWheelEvent(MouseWheelEvent& event)
     {
+        if (waveform.empty())
+        {
+            return;
+        }
+
         int direction = event.deltaY > 0.0 ? 1 : -1;
 
         if (event.modifiers.has(ModifierKey::Control))

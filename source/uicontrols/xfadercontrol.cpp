@@ -36,12 +36,17 @@ namespace TTK
 
         // range
         context->setFillColor(ShadowColor);
-        context->drawRect(CRect(rangeBox).offset(5, 5), kDrawFilled);
+        context->drawRect(CRect(rangeBox).offset(ShadowOffset, ShadowOffset), kDrawFilled);
         context->drawBitmap(rangeBitmap, rangeBox);
 
         // handle
         CRect handleBox(insetRangeBox.getTopLeft().offset(getValue() * insetRangeBox.getWidth(), 0), handleBitmapSize);
         context->drawBitmap(handleBitmap, handleBox);
+
+        // outline
+        context->setLineWidth(ThickLine);
+        context->setFrameColor(BorderColor);
+        context->drawRect(rangeBox, kDrawStroked);
 
         setDirty(false);
     }

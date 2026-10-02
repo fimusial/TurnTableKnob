@@ -26,22 +26,21 @@ namespace TTK
 
         // button
         context->setFillColor(ShadowColor);
-        context->drawRect(CRect(curveBox).offset(5, 5), kDrawFilled);
+        context->drawRect(CRect(curveBox).offset(ShadowOffset, ShadowOffset), kDrawFilled);
+        context->setLineWidth(ThickLine);
+        context->setFrameColor(BorderColor);
         context->setFillColor(BackgroundColor);
-        context->drawRect(CRect(curveBox), kDrawFilled);
-        context->setFillColor(BackgroundColor);
-        context->drawRect(insetCurveBox, kDrawFilled);
+        context->drawRect(CRect(curveBox), kDrawFilledAndStroked);
 
         // grid
-        context->setLineWidth(1.0);
-        context->setFrameColor(ThinBorderColor);
+        context->setLineWidth(ThinLine);
+        context->setFrameColor(BorderColor);
         context->setLineStyle(kLineSolid);
-        context->drawRect(insetCurveBox, kDrawStroked);
         context->drawLine(insetCurveBox.getLeftCenter(), insetCurveBox.getRightCenter());
         context->drawLine(insetCurveBox.getTopCenter(), insetCurveBox.getBottomCenter());
 
         // curve
-        context->setLineWidth(2.0);
+        context->setLineWidth(ThickLine);
         context->setFrameColor(MainColor);
         drawFunction(context, insetCurveBox, [this](double x) { return getXFaderGain(x, getValue()); });
 

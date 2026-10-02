@@ -41,17 +41,32 @@ namespace TTK
         CRect viewSize = getViewSize();
         double currentValue = snapAutoPlayValue(getValue());
 
+        CRect reptOffset = CRect(rept).offset(ShadowOffset, ShadowOffset);
+        CRect backOffset = CRect(back).offset(ShadowOffset, ShadowOffset);
+        CRect stopOffset = CRect(stop).offset(ShadowOffset, ShadowOffset);
+        CRect playOffset = CRect(play).offset(ShadowOffset, ShadowOffset);
+
         context->setFillColor(ShadowColor);
 
-        if (!reptPressed(currentValue)) context->drawRect(CRect(rept).offset(5, 5), kDrawFilled);
-        if (!backPressed(currentValue)) context->drawRect(CRect(back).offset(5, 5), kDrawFilled);
-        if (!stopPressed(currentValue)) context->drawRect(CRect(stop).offset(5, 5), kDrawFilled);
-        if (!playPressed(currentValue)) context->drawRect(CRect(play).offset(5, 5), kDrawFilled);
+        // shadows
+        context->drawRect(reptOffset, kDrawFilled);
+        context->drawRect(backOffset, kDrawFilled);
+        context->drawRect(stopOffset, kDrawFilled);
+        context->drawRect(playOffset, kDrawFilled);
 
-        context->drawBitmap(reptBitmap, reptPressed(currentValue) ? CRect(rept).offset(5, 5) : rept);
-        context->drawBitmap(backBitmap, backPressed(currentValue) ? CRect(back).offset(5, 5) : back);
-        context->drawBitmap(stopBitmap, stopPressed(currentValue) ? CRect(stop).offset(5, 5) : stop);
-        context->drawBitmap(playBitmap, playPressed(currentValue) ? CRect(play).offset(5, 5) : play);
+        // buttons
+        context->drawBitmap(reptBitmap, reptPressed(currentValue) ? reptOffset : rept);
+        context->drawBitmap(backBitmap, backPressed(currentValue) ? backOffset : back);
+        context->drawBitmap(stopBitmap, stopPressed(currentValue) ? stopOffset : stop);
+        context->drawBitmap(playBitmap, playPressed(currentValue) ? playOffset : play);
+
+        // outlines
+        context->setLineWidth(ThickLine);
+        context->setFrameColor(BorderColor);
+        context->drawRect(reptPressed(currentValue) ? reptOffset : rept, kDrawStroked);
+        context->drawRect(backPressed(currentValue) ? backOffset : back, kDrawStroked);
+        context->drawRect(stopPressed(currentValue) ? stopOffset : stop, kDrawStroked);
+        context->drawRect(playPressed(currentValue) ? playOffset : play, kDrawStroked);
 
         setDirty(false);
     }
