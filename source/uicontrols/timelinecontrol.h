@@ -42,8 +42,8 @@ namespace TTK
         std::vector<CPoint> waveform;
         SharedPointer<CVSTGUITimer> timer;
 
-        void selectWaveform();
-        void readWaveform();
-        void readFilePath();
+        void selectNewFile();
+        void readProcessorSegment();
+        void readProcessorFilePath();
     };
 }

@@ -38,8 +38,8 @@ namespace TTK
         holdControl = new HoldControl(viewSize, listener, processor);
         listener->controlTagDidChange(holdControl);
 
-        readWaveform();
-        readFilePath();
+        readProcessorSegment();
+        readProcessorFilePath();
 
         timer = makeOwned<CVSTGUITimer>(
             [this](auto*) { invalid(); },
@@ -58,8 +58,8 @@ namespace TTK
         const std::string& processorFilePath = processor.getFilePath();
         if (!processorFilePath.empty() && filePath != processorFilePath)
         {
-            readWaveform();
-            readFilePath();
+            readProcessorSegment();
+            readProcessorFilePath();
         }
 
         // panel background
@@ -161,7 +161,7 @@ namespace TTK
 
         if (filePathBox.pointInside(event.mousePosition))
         {
-            selectWaveform();
+            selectNewFile();
             return;
         }
 
@@ -246,7 +246,7 @@ namespace TTK
         event.consumed = true;
     }
 
-    void TimelineControl::selectWaveform()
+    void TimelineControl::selectNewFile()
     {
         CNewFileSelector* selector = CNewFileSelector::create(getFrame(), CNewFileSelector::kSelectFile);
         if (!selector)
@@ -256,21 +256,27 @@ namespace TTK
 
         selector->setTitle("Select an audio file");
         selector->setAllowMultiFileSelection(false);
-        selector->setDefaultExtension(CFileExtension("WAVE", "wav"));
+        selector->addFileExtension(CFileExtension("WAVE", "wav"));
+        selector->addFileExtension(CFileExtension("MP3", "mp3"));
+        selector->addFileExtension(CFileExtension("FLAC", "flac"));
         selector->run(this);
 
-        const char* selectorResult = selector->getSelectedFile(0);
-        if (selectorResult && processor.setNewFilePath(selectorResult))
+        const char* path = selector->getSelectedFile(0);
+        if (path && processor.readNewFile(path))
         {
-            readWaveform();
-            readFilePath();
+            readProcessorSegment();
+            readProcessorFilePath();
             invalid();
+        }
+        else
+        {
+            filePath = ERROR_FILE_PATH;
         }
 
         selector->forget();
     }
 
-    void TimelineControl::readWaveform()
+    void TimelineControl::readProcessorSegment()
     {
         waveform.clear();
 
@@ -297,7 +303,7 @@ namespace TTK
         }
     }
 
-    void TimelineControl::readFilePath()
+    void TimelineControl::readProcessorFilePath()
     {
         const std::string& newFilePath = processor.getFilePath();
         filePath = newFilePath.empty() ? DEFAULT_FILE_PATH : newFilePath;

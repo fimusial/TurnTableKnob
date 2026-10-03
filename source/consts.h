@@ -15,8 +15,8 @@ namespace TTK
     static const double ThickLine = 2.0;
     static const double ShadowOffset = 5.0;
 
-    // TODO: file path error messages
-    static const char* DEFAULT_FILE_PATH = "select a .wav file...";
+    static const char* DEFAULT_FILE_PATH = "no audio file selected...";
+    static const char* ERROR_FILE_PATH = "could not read audio file...";
     static const double SAMPLE_WAVEFORM_RATIO = 128.0;
     static const size_t MIN_WINDOW_SIZE = 32768;
     static const size_t MAX_WINDOW_SIZE = 131072;

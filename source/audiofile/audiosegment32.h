@@ -14,5 +14,9 @@ namespace TTK
         std::vector<std::vector<float>> channels;
 
         static AudioSegment32* fromFile(std::string path);
+        static AudioSegment32* fromWavFile(std::string path);
+        static AudioSegment32* fromMp3File(std::string path);
+        static AudioSegment32* fromFlacFile(std::string path);
+        static AudioSegment32* fromInterleaved(float* interleaved, unsigned int channelCount, unsigned int sampleRate, size_t sampleCount);
     };
 }

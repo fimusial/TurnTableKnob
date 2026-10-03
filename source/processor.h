@@ -34,7 +34,7 @@ namespace TTK
         tresult PLUGIN_API getState(IBStream* state) SMTG_OVERRIDE;
         tresult PLUGIN_API process(ProcessData& data) SMTG_OVERRIDE;
 
-        bool setNewFilePath(const std::string& newFilePath) override;
+        bool readNewFile(const std::string& newFilePath) override;
         AudioSegment32* getSegment() override;
         const std::string& getFilePath() override;
         size_t getWindowStart() override;
@@ -65,7 +65,7 @@ namespace TTK
         size_t sampleIndex;
         DeClicker deClicker;
 
-        bool processNewFilePath(const std::string& newFilePath, size_t newWindowStart, size_t newWindowEnd);
+        bool readNewFile(const std::string& path, size_t newWindowStart, size_t newWindowEnd);
         void beginParameterChanges(ProcessData& data);
         void endParameterChanges();
         void processSamples(ProcessData& data);

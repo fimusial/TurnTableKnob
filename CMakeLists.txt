@@ -41,6 +41,8 @@ smtg_add_vst3plugin(TurnTableKnob
     source/version.h
     source/audiofile/audiosegment32.cpp
     source/audiofile/audiosegment32.h
+    source/audiofile/dr_flac.h
+    source/audiofile/dr_mp3.h
     source/audiofile/dr_wav.h
     source/processing/declicker.cpp
     source/processing/declicker.h

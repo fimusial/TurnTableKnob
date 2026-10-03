@@ -107,8 +107,8 @@ namespace TTK
         size_t windowEndValue = MIN_WINDOW_SIZE;
         streamer.readInt64u(windowEndValue);
 
-        char* filePathChars = streamer.readStr8();
-        if (!filePathChars || !processNewFilePath(std::string(filePathChars), windowStartValue, windowEndValue))
+        char* path = streamer.readStr8();
+        if (!path || !readNewFile(std::string(path), windowStartValue, windowEndValue))
         {
             return kResultFalse;
         }
@@ -166,9 +166,9 @@ namespace TTK
         return kResultOk;
     }
 
-    bool TurnTableKnobProcessor::setNewFilePath(const std::string& newFilePath)
+    bool TurnTableKnobProcessor::readNewFile(const std::string& path)
     {
-        return processNewFilePath(newFilePath, 0, MIN_WINDOW_SIZE);
+        return readNewFile(path, 0, MIN_WINDOW_SIZE);
     }
 
     AudioSegment32* TurnTableKnobProcessor::getSegment()
@@ -274,9 +274,9 @@ namespace TTK
         hold = newValue;
     }
 
-    bool TurnTableKnobProcessor::processNewFilePath(const std::string& newFilePath, size_t newWindowStart, size_t newWindowEnd)
+    bool TurnTableKnobProcessor::readNewFile(const std::string& path, size_t newWindowStart, size_t newWindowEnd)
     {
-        if (newFilePath.empty())
+        if (path.empty())
         {
             return false;
         }
@@ -286,7 +286,7 @@ namespace TTK
             return false;
         }
 
-        AudioSegment32* newSegment = AudioSegment32::fromFile(newFilePath);
+        AudioSegment32* newSegment = AudioSegment32::fromFile(path);
         if (!newSegment)
         {
             return false;
@@ -294,11 +294,13 @@ namespace TTK
 
         if (newSegment->sampleCount < MIN_WINDOW_SIZE)
         {
+            delete newSegment;
             return false;
         }
 
         if (newWindowEnd > newSegment->sampleCount - 2)
         {
+            delete newSegment;
             return false;
         }
 
@@ -312,7 +314,7 @@ namespace TTK
         windowStart = 0;
         windowEnd = MIN_WINDOW_SIZE;
 
-        filePath = newFilePath;
+        filePath = path;
         segment = newSegment;
 
         windowEnd = newWindowEnd;

@@ -17,3 +17,5 @@
 !*.md
 
 source/audiofile/dr_wav.h
+source/audiofile/dr_mp3.h
+source/audiofile/dr_flac.h

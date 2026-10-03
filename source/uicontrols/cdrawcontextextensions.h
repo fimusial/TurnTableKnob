@@ -7,7 +7,7 @@ namespace TTK
 {
     inline void drawPolygon(CDrawContext* context, std::vector<CPoint> points, size_t start, size_t end)
     {
-        if (start >= end || end > points.size() - 1)
+        if (start >= end || end > points.size())
         {
             return;
         }
