@@ -1,0 +1,4 @@
+source/audiofile/dr_flac.h linguist-vendored
+source/audiofile/dr_mp3.h linguist-vendored
+source/audiofile/dr_wav.h linguist-vendored
+cmrc/CMakeRC.cmake linguist-vendored
