@@ -9,8 +9,7 @@
 namespace TTK
 {
     TurnTableKnobProcessor::TurnTableKnobProcessor()
-        : timelineControlFactory(*this),
-        segment(nullptr),
+        : segment(nullptr),
         filePath(""),
         windowStart(0),
         windowEnd(MIN_WINDOW_SIZE),
@@ -50,6 +49,23 @@ namespace TTK
     tresult PLUGIN_API TurnTableKnobProcessor::terminate()
     {
         return AudioEffect::terminate();
+    }
+
+    tresult PLUGIN_API TurnTableKnobProcessor::connect(IConnectionPoint* other)
+    {
+        tresult result = AudioEffect::connect(other);
+        if (result == kResultOk)
+        {
+            sendProcessorToController(this);
+        }
+
+        return result;
+    }
+
+    tresult PLUGIN_API TurnTableKnobProcessor::disconnect(IConnectionPoint* other)
+    {
+        sendProcessorToController(nullptr);
+        return AudioEffect::disconnect(other);
     }
 
     tresult PLUGIN_API TurnTableKnobProcessor::setBusArrangements(SpeakerArrangement* inputs, int32 numIns, SpeakerArrangement* outputs, int32 numOuts)
@@ -272,6 +288,16 @@ namespace TTK
     void TurnTableKnobProcessor::resetHold(bool newValue)
     {
         hold = newValue;
+    }
+
+    void TurnTableKnobProcessor::sendProcessorToController(ITimelineControlProcessor* processor)
+    {
+        if (IPtr<IMessage> message = Steinberg::owned(allocateMessage()))
+        {
+            message->setMessageID(ProcessorMessageId);
+            message->getAttributes()->setInt(ProcessorMessageKey, (int64)(intptr_t)processor);
+            sendMessage(message);
+        }
     }
 
     bool TurnTableKnobProcessor::readNewFile(const std::string& path, size_t newWindowStart, size_t newWindowEnd)

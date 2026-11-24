@@ -4,6 +4,9 @@
 
 namespace TTK
 {
+    static constexpr const char* ProcessorMessageId = "TTKTimelineControlProcessor";
+    static constexpr const char* ProcessorMessageKey = "processor";
+
     class ITimelineControlProcessor
     {
     public:

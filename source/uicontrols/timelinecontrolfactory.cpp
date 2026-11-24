@@ -1,12 +1,14 @@
 #include "timelinecontrolfactory.h"
 
 #include "vstgui/uidescription/detail/uiviewcreatorattributes.h"
+#include "vstgui/plugin-bindings/vst3editor.h"
+
 #include "timelinecontrol.h"
+#include "../controller.h"
 
 namespace TTK
 {
-    TimelineControlFactory::TimelineControlFactory(ITimelineControlProcessor& processor)
-        : processor(processor)
+    TimelineControlFactory::TimelineControlFactory()
     {
         UIViewFactory::registerViewCreator(*this);
     }
@@ -29,6 +31,11 @@ namespace TTK
     CView* TimelineControlFactory::create(
         const UIAttributes& attributes, const IUIDescription* description) const
     {
+        if (!description)
+        {
+            return nullptr;
+        }
+
         CPoint origin;
         if (!attributes.getPointAttribute("origin", origin))
         {
@@ -65,8 +72,34 @@ namespace TTK
             return nullptr;
         }
 
+        IControlListener* listener = description->getControlListener("TurnTableKnobController");
+        if (!listener)
+        {
+            return nullptr;
+        }
+
+        VSTGUI::VST3Editor* editor = (VSTGUI::VST3Editor*)description->getController();
+        if (!editor)
+        {
+            return nullptr;
+        }
+
+        TurnTableKnobController* controller = (TurnTableKnobController*)editor->getController();
+        if (!controller)
+        {
+            return nullptr;
+        }
+
+        ITimelineControlProcessor* processor = controller->getProcessor();
+        if (!processor)
+        {
+            return nullptr;
+        }
+
         return new TimelineControl(
             CRect(origin, size), timelineBox, filePathBox, holdIndicatorBox, deClickerBox,
-            description->getControlListener("TurnTableKnobController"), processor);
+            listener, *processor);
     }
+
+    static TimelineControlFactory TimelineControlFactoryInstance;
 }

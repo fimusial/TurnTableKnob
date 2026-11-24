@@ -2,7 +2,7 @@
 
 #include "public.sdk/source/vst/vstaudioeffect.h"
 
-#include "uicontrols/timelinecontrolfactory.h"
+#include "uicontrols/itimelinecontrolprocessor.h"
 #include "processing/smoothfollowparameter.h"
 #include "processing/declicker.h"
 
@@ -26,6 +26,8 @@ namespace TTK
 
         tresult PLUGIN_API initialize(FUnknown* context) SMTG_OVERRIDE;
         tresult PLUGIN_API terminate() SMTG_OVERRIDE;
+        tresult PLUGIN_API connect(IConnectionPoint* other) SMTG_OVERRIDE;
+        tresult PLUGIN_API disconnect(IConnectionPoint* other) SMTG_OVERRIDE;
         tresult PLUGIN_API setBusArrangements(SpeakerArrangement* inputs, int32 numIns, SpeakerArrangement* outputs, int32 numOuts) SMTG_OVERRIDE;
         tresult PLUGIN_API canProcessSampleSize(int32 symbolicSampleSize) SMTG_OVERRIDE;
         tresult PLUGIN_API setupProcessing(ProcessSetup& newSetup) SMTG_OVERRIDE;
@@ -49,7 +51,6 @@ namespace TTK
         void resetHold(bool newValue = false) override;
 
     private:
-        TimelineControlFactory timelineControlFactory;
         AudioSegment32* segment;
 
         std::string filePath;
@@ -65,6 +66,7 @@ namespace TTK
         size_t sampleIndex;
         DeClicker deClicker;
 
+        void sendProcessorToController(ITimelineControlProcessor* processor);
         bool readNewFile(const std::string& path, size_t newWindowStart, size_t newWindowEnd);
         void beginParameterChanges(ProcessData& data);
         void endParameterChanges();

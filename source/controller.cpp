@@ -95,6 +95,21 @@ namespace TTK
         return kResultOk;
     }
 
+    tresult PLUGIN_API TurnTableKnobController::notify(IMessage* message)
+    {
+        if (message && FIDStringsEqual(message->getMessageID(), ProcessorMessageId))
+        {
+            intptr_t value = 0;
+            if (message->getAttributes()->getInt(ProcessorMessageKey, value) == kResultOk)
+            {
+                processor = (ITimelineControlProcessor*)value;
+                return kResultOk;
+            }
+        }
+
+        return EditControllerEx1::notify(message);
+    }
+
     IPlugView* PLUGIN_API TurnTableKnobController::createView(FIDString name)
     {
         if (!FIDStringsEqual(name, Vst::ViewType::kEditor))
@@ -109,5 +124,10 @@ namespace TTK
             nullptr);
 
         return new VSTGUI::VST3Editor(uiDescription, this, "view");
+    }
+
+    ITimelineControlProcessor* TurnTableKnobController::getProcessor() const
+    {
+        return processor;
     }
 }

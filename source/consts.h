@@ -2,6 +2,8 @@
 
 #include "vstgui/vstgui.h"
 
+using namespace VSTGUI;
+
 namespace TTK
 {
     static const CColor BackgroundColor = CColor(0x17, 0x17, 0x17);
