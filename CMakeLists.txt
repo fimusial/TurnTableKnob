@@ -12,7 +12,7 @@ if(NOT vst3sdk_SOURCE_DIR)
 endif()
 
 project(TurnTableKnob
-    VERSION 1.0.0.0 
+    VERSION 1.0.1.0 
     DESCRIPTION "TurnTableKnob VST 3 Plug-in"
 )
 
